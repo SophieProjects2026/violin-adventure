@@ -3,7 +3,14 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#7057ff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Violin">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <title>Violin Adventure</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -27,8 +34,8 @@
           <div class="points-overview">
             <div class="total-score" id="totalScoreValue">0</div>
             <div>
-              <p class="point-rules">You earn 1 point when you complete 10 questions perfectly. If you miss any question, that round earns 0 points. You can also earn 1 point each day by practicing violin for more than 15 minutes.</p>
-              <p id="practiceStatus" class="status-text welcome-status">Ready for today's practice? 🎻</p>
+              <p class="point-rules">You earn 1 point when you complete 10 questions perfectly on the first try. If you miss a question, you can try once more for learning, but that round will not earn a point. You also earn 1 point for every 15 minutes of real violin practice.</p>
+              <p id="practiceStatus" class="status-text welcome-status">Ready for today's practice? &#127931;</p>
             </div>
           </div>
           <div class="period-points compact-points">

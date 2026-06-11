@@ -270,6 +270,8 @@ let customSettings = loadCustomSettings();
 let selectedDifficulty = loadSelectedDifficulty();
 let progressRecords = loadProgressRecords();
 let practicePointDates = loadPracticePointDates();
+let practiceTotalMinutes = loadPracticeTotalMinutes();
+let practicePointsAwarded = loadPracticePointsAwarded();
 let redemptionRecords = loadRedemptionRecords();
 let customRewards = loadCustomRewards();
 let editingRewardId = null;
@@ -385,12 +387,12 @@ function saveProgressRecords() {
   localStorage.setItem("liamProgressRecords", JSON.stringify(progressRecords));
 }
 
-function recordPointEarned(mode = activeMode.id) {
+function recordPointEarned(mode = activeMode.id, points = 1) {
   progressRecords.push({
     date: localDateKey(new Date()),
     timestamp: new Date().toISOString(),
     mode,
-    points: 1
+    points
   });
   saveProgressRecords();
 }
@@ -401,6 +403,39 @@ function loadPracticePointDates() {
 
 function savePracticePointDates() {
   localStorage.setItem("liamPracticePointDates", JSON.stringify(practicePointDates));
+}
+
+function getLoggedPracticeMinutes() {
+  const log = getPracticeLog();
+  return Object.values(log).reduce((total, entry) => total + Number(entry.minutes || 0), 0);
+}
+
+function loadPracticeTotalMinutes() {
+  const saved = localStorage.getItem("liamPracticeTotalMinutes");
+
+  if (saved !== null) {
+    return Number(saved) || 0;
+  }
+
+  return getLoggedPracticeMinutes();
+}
+
+function savePracticeTotalMinutes() {
+  localStorage.setItem("liamPracticeTotalMinutes", String(practiceTotalMinutes));
+}
+
+function loadPracticePointsAwarded() {
+  const saved = localStorage.getItem("liamPracticePointsAwarded");
+
+  if (saved !== null) {
+    return Number(saved) || 0;
+  }
+
+  return Math.max(practicePointDates.length, Math.floor(practiceTotalMinutes / 15));
+}
+
+function savePracticePointsAwarded() {
+  localStorage.setItem("liamPracticePointsAwarded", String(practicePointsAwarded));
 }
 
 function loadRedemptionRecords() {
@@ -468,11 +503,10 @@ function applyDifficultyToControls() {
 
 function updatePracticeStatus() {
   const log = getPracticeLog();
-  const today = todayKey();
+  const today = localDateKey(new Date());
 
   if (log[today]) {
     practiceStatus.textContent = `Great job! You practiced ${log[today].minutes} minutes today.`;
-    minutesInput.value = log[today].minutes;
     return;
   }
 
@@ -490,20 +524,28 @@ function saveTodayPractice() {
   }
 
   const log = getPracticeLog();
+  const previousTodayMinutes = Number(log[today]?.minutes || 0);
   log[today] = {
-    minutes,
+    minutes: previousTodayMinutes + minutes,
     savedAt: new Date().toISOString()
   };
 
-  if (minutes > 15 && !practicePointDates.includes(today)) {
-    practicePointDates.push(today);
-    savePracticePointDates();
-    recordPointEarned("daily-practice");
-    progressMessage.textContent = "Daily practice point earned!";
-  } else if (minutes > 15) {
-    progressMessage.textContent = "Daily practice point already earned today.";
+  practiceTotalMinutes += minutes;
+  savePracticeTotalMinutes();
+
+  const earnedPracticePoints = Math.floor(practiceTotalMinutes / 15);
+  const newPracticePoints = Math.max(0, earnedPracticePoints - practicePointsAwarded);
+
+  if (newPracticePoints > 0) {
+    practicePointsAwarded += newPracticePoints;
+    savePracticePointsAwarded();
+    recordPointEarned("real-practice", newPracticePoints);
+    progressMessage.textContent = newPracticePoints === 1
+      ? "Practice point earned!"
+      : `${newPracticePoints} practice points earned!`;
   } else {
-    progressMessage.textContent = "Practice saved. More than 15 minutes earns 1 daily practice point.";
+    const minutesToNextPoint = 15 - (practiceTotalMinutes % 15);
+    progressMessage.textContent = `Practice saved. ${minutesToNextPoint} more minute${minutesToNextPoint === 1 ? "" : "s"} to the next practice point.`;
   }
 
   savePracticeLog(log);
@@ -513,7 +555,7 @@ function saveTodayPractice() {
 
 function getTotalScore() {
   const gamePoints = Object.values(levelStats).reduce((total, stat) => total + stat.score, 0);
-  return gamePoints + practicePointDates.length;
+  return gamePoints + practicePointsAwarded;
 }
 
 function getRewardTitle() {
@@ -862,6 +904,8 @@ function saveProgressSnapshot() {
     levelStats,
     progressRecords,
     practicePointDates,
+    practiceTotalMinutes,
+    practicePointsAwarded,
     redemptionRecords,
     customRewards,
     practiceLog: getPracticeLog()
@@ -884,6 +928,8 @@ function resetProgress() {
   });
   progressRecords = [];
   practicePointDates = [];
+  practiceTotalMinutes = 0;
+  practicePointsAwarded = 0;
   redemptionRecords = [];
   customRewards = [];
   clearRewardForm();
@@ -892,6 +938,8 @@ function resetProgress() {
   localStorage.removeItem("liamPracticeLog");
   localStorage.removeItem("liamProgressRecords");
   localStorage.removeItem("liamPracticePointDates");
+  localStorage.removeItem("liamPracticeTotalMinutes");
+  localStorage.removeItem("liamPracticePointsAwarded");
   localStorage.removeItem("liamRewardRedemptions");
   localStorage.removeItem("liamCustomRewards");
   localStorage.removeItem("liamProgressSnapshot");
@@ -936,8 +984,15 @@ function startRound(total = 10) {
     total,
     answered: 0,
     missed: false,
-    complete: false
+    complete: false,
+    attempts: 0,
+    revealing: false
   };
+}
+
+function startQuestionAttempt() {
+  roundState.attempts = 0;
+  roundState.revealing = false;
 }
 
 function markRoundMissed() {
@@ -948,7 +1003,7 @@ function markRoundMissed() {
 
 function roundStatusText() {
   const answered = Math.min(roundState.answered, roundState.total);
-  const perfectText = roundState.missed ? "Perfect round lost: this round earns 0 points." : "Perfect so far.";
+  const perfectText = roundState.missed ? "Learning round: finish strong." : "Perfect first tries so far.";
   return `Question ${answered + 1} of ${roundState.total}. ${perfectText}`;
 }
 
@@ -964,9 +1019,9 @@ function finishRound() {
   }
 
   resetActiveStreak();
-  gameFeedback.textContent = "Round complete. Since there was a miss, this round earns 0 points.";
+  gameFeedback.textContent = "Round complete. Nice learning round! A point needs 10 first-try answers.";
   gameFeedback.className = "feedback try-again";
-  melodyProgress.textContent = "Round complete: try for a perfect 10 next time.";
+  melodyProgress.textContent = "Round complete: try for 10 first-try answers next time.";
 }
 
 function countCorrectQuestion() {
@@ -1251,6 +1306,7 @@ function pickNewChallenge() {
   if (activeMode.promptType === "melody") {
     currentMelody = buildNoteSequence(10);
     melodyIndex = 0;
+    startQuestionAttempt();
     currentNote = currentMelody[0];
     if (!currentNote) {
       gameFeedback.textContent = "No notes match these settings yet.";
@@ -1258,7 +1314,7 @@ function pickNewChallenge() {
     }
 
     drawMelody();
-    melodyProgress.textContent = `Melody note 1 of ${currentMelody.length}. Perfect so far.`;
+    melodyProgress.textContent = `Melody note 1 of ${currentMelody.length}. Perfect first tries so far.`;
     gameFeedback.textContent = "Tap the first note location.";
     return;
   }
@@ -1271,6 +1327,7 @@ function pickNewChallenge() {
       missedIndexes: new Set()
     };
     currentNote = practiceRun.notes[0];
+    startQuestionAttempt();
     if (!currentNote) {
       gameFeedback.textContent = "No notes match these settings yet.";
       return;
@@ -1280,7 +1337,7 @@ function pickNewChallenge() {
     melodyIndex = 0;
     drawPracticeRun();
     updatePracticeProgress();
-    gameFeedback.textContent = "Tap note 1 of 10. Perfect so far.";
+    gameFeedback.textContent = "Tap note 1 of 10. Perfect first tries so far.";
     return;
   }
 
@@ -1292,8 +1349,9 @@ function pickNewChallenge() {
 
   currentMelody = [];
   melodyIndex = 0;
+  startQuestionAttempt();
   drawSingleNote(currentNote);
-  melodyProgress.textContent = activeMode.promptType === "audio" ? "Question 1 of 10. Listen, then choose the location. Perfect so far." : roundStatusText();
+  melodyProgress.textContent = activeMode.promptType === "audio" ? "Question 1 of 10. Listen, then choose the location. Perfect first tries so far." : roundStatusText();
   gameFeedback.textContent = activeMode.promptType === "audio" ? "Tap Replay Note to hear it again." : "Tap the answer.";
 
   if (activeMode.promptType === "audio") {
@@ -1307,9 +1365,10 @@ function nextSingleQuestion() {
   }
 
   clearChoiceMarks();
+  startQuestionAttempt();
   currentNote = pickRandomNote();
   drawSingleNote(currentNote);
-  melodyProgress.textContent = activeMode.promptType === "audio" ? `Question ${roundState.answered + 1} of 10. Listen, then choose the location. ${roundState.missed ? "Perfect round lost: this round earns 0 points." : "Perfect so far."}` : roundStatusText();
+  melodyProgress.textContent = activeMode.promptType === "audio" ? `Question ${roundState.answered + 1} of 10. Listen, then choose the location. ${roundState.missed ? "Learning round: finish strong." : "Perfect first tries so far."}` : roundStatusText();
   gameFeedback.textContent = activeMode.promptType === "audio" ? "Tap Replay Note to hear it again." : "Tap the answer.";
 
   if (activeMode.promptType === "audio") {
@@ -1338,31 +1397,57 @@ function setActiveMode(modeId) {
   pickNewChallenge();
 }
 
+function targetAnswerText(target, answerType = activeMode.answerType) {
+  if (answerType === "string") {
+    return `${target.name} is on the ${target.string} string.`;
+  }
+
+  if (answerType === "finger") {
+    const finger = FINGERS.find((item) => item.value === target.finger);
+    return `${target.name} uses ${finger.longLabel}.`;
+  }
+
+  return locationLabel(target);
+}
+
 function handleCorrect(button) {
   button.classList.add("correct-choice");
-  gameFeedback.textContent = "Correct!";
+  gameFeedback.textContent = roundState.attempts > 0 ? "Good job! You found it." : "Correct!";
   gameFeedback.className = "feedback correct";
 }
 
-function handleWrong(button) {
-  markRoundMissed();
+function handleWrong(button, target, answerType = activeMode.answerType) {
+  if (roundState.revealing) {
+    return "locked";
+  }
+
   button.classList.add("wrong-choice");
-  gameFeedback.textContent = "Try again";
+  roundState.attempts += 1;
+  markRoundMissed();
   gameFeedback.className = "feedback try-again";
+
+  if (roundState.attempts === 1) {
+    gameFeedback.textContent = "Good try! Want to try one more time?";
+  } else {
+    roundState.revealing = true;
+    gameFeedback.textContent = `Good try! The correct answer is ${targetAnswerText(target, answerType)}`;
+  }
 
   if (activeMode.promptType === "practice") {
     updatePracticeProgress();
-    return;
+    return roundState.revealing ? "reveal" : "retry";
   }
 
   if (activeMode.promptType === "melody") {
-    melodyProgress.textContent = `Melody note ${melodyIndex + 1} of ${currentMelody.length}. Perfect round lost: this round earns 0 points.`;
-    return;
+    melodyProgress.textContent = `Melody note ${melodyIndex + 1} of ${currentMelody.length}. Learning round: try one more time.`;
+    return roundState.revealing ? "reveal" : "retry";
   }
 
   melodyProgress.textContent = activeMode.promptType === "audio"
-    ? `Question ${roundState.answered + 1} of 10. Listen, then choose the location. Perfect round lost: this round earns 0 points.`
+    ? `Question ${roundState.answered + 1} of 10. Listen, then choose the location. Learning round.`
     : roundStatusText();
+
+  return roundState.revealing ? "reveal" : "retry";
 }
 
 function updatePracticeProgress() {
@@ -1380,7 +1465,7 @@ function updatePracticeProgress() {
     return label;
   });
 
-  const perfectText = roundState.missed ? "Perfect round lost: this round earns 0 points." : "Perfect so far.";
+  const perfectText = roundState.missed ? "Learning round: finish strong." : "Perfect first tries so far.";
   melodyProgress.textContent = `Practice note ${Math.min(practiceRun.index + 1, practiceRun.notes.length)} of ${practiceRun.notes.length}. ${perfectText}`;
   practiceSequence.textContent = notes.join("  ");
 }
@@ -1412,7 +1497,7 @@ function finishPracticeRun() {
     `Time: ${seconds} seconds`,
     `Notes missed: ${missedNotes.length ? missedNotes.join(" | ") : "None"}`
   ].join("<br>");
-  gameFeedback.textContent = roundState.missed ? "Practice round complete. This round earns 0 points." : "Perfect 10! You earned 1 point.";
+  gameFeedback.textContent = roundState.missed ? "Practice round complete. A point needs 10 first-try answers." : "Perfect 10! You earned 1 point.";
   gameFeedback.className = roundState.missed ? "feedback try-again" : "feedback correct";
   drawPracticeRun();
 }
@@ -1427,7 +1512,33 @@ function handleLocationTap(button, stringName, finger) {
   const isCorrect = isCorrectLocation(target, stringName, finger);
 
   if (!isCorrect) {
-    handleWrong(button);
+    const result = handleWrong(button, target, "location");
+    if (result === "reveal") {
+      countCorrectQuestion();
+
+      if (activeMode.promptType === "melody") {
+        melodyIndex += 1;
+
+        if (roundState.complete || melodyIndex >= currentMelody.length) {
+          melodyProgress.textContent = "Melody complete!";
+          melodyAnswer.textContent = currentMelody.map(locationLabel).join(" | ");
+          return;
+        }
+
+        currentNote = currentMelody[melodyIndex];
+        startQuestionAttempt();
+        setTimeout(() => {
+          clearChoiceMarks();
+          melodyProgress.textContent = `Melody note ${melodyIndex + 1} of ${currentMelody.length}. Learning round: finish strong.`;
+          drawMelody();
+        }, 1800);
+        return;
+      }
+
+      if (!roundState.complete) {
+        setTimeout(nextSingleQuestion, 1800);
+      }
+    }
     return;
   }
 
@@ -1453,7 +1564,8 @@ function handleLocationTap(button, stringName, finger) {
   }
 
   currentNote = currentMelody[melodyIndex];
-  melodyProgress.textContent = `Melody note ${melodyIndex + 1} of ${currentMelody.length}. ${roundState.missed ? "Perfect round lost: this round earns 0 points." : "Perfect so far."}`;
+  startQuestionAttempt();
+  melodyProgress.textContent = `Melody note ${melodyIndex + 1} of ${currentMelody.length}. ${roundState.missed ? "Learning round: finish strong." : "Perfect first tries so far."}`;
   drawMelody();
 }
 
@@ -1463,7 +1575,25 @@ function handlePracticeTap(button, stringName, finger) {
 
   if (!isCorrect) {
     practiceRun.missedIndexes.add(practiceRun.index);
-    handleWrong(button);
+    const result = handleWrong(button, target, "location");
+    if (result === "reveal") {
+      practiceRun.index += 1;
+      countCorrectQuestion();
+
+      if (roundState.complete || practiceRun.index >= practiceRun.notes.length) {
+        finishPracticeRun();
+        return;
+      }
+
+      currentNote = practiceRun.notes[practiceRun.index];
+      startQuestionAttempt();
+      updatePracticeProgress();
+      setTimeout(() => {
+        clearChoiceMarks();
+        drawPracticeRun();
+      }, 1800);
+      return;
+    }
     updatePracticeProgress();
     return;
   }
@@ -1478,6 +1608,7 @@ function handlePracticeTap(button, stringName, finger) {
   }
 
   currentNote = practiceRun.notes[practiceRun.index];
+  startQuestionAttempt();
   updatePracticeProgress();
   drawPracticeRun();
   setTimeout(clearChoiceMarks, 250);
@@ -1495,7 +1626,14 @@ function handleStringTap(button, stringName) {
     return;
   }
 
-  handleWrong(button);
+  const result = handleWrong(button, currentNote, "string");
+  if (result === "reveal") {
+    countCorrectQuestion();
+
+    if (!roundState.complete) {
+      setTimeout(nextSingleQuestion, 1800);
+    }
+  }
 }
 
 function handleFingerTap(button, finger) {
@@ -1510,7 +1648,14 @@ function handleFingerTap(button, finger) {
     return;
   }
 
-  handleWrong(button);
+  const result = handleWrong(button, currentNote, "finger");
+  if (result === "reveal") {
+    countCorrectQuestion();
+
+    if (!roundState.complete) {
+      setTimeout(nextSingleQuestion, 1800);
+    }
+  }
 }
 
 function createModeSelectors() {
@@ -1721,6 +1866,15 @@ practiceModeSelect.addEventListener("change", () => {
   }
 });
 earViolinCue.addEventListener("click", guideEarTrainingAnswer);
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js")
+      .catch(() => {
+        // The app still works normally if service workers are unavailable.
+      });
+  });
+}
 
 drawStaffLines();
 createModeSelectors();

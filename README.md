@@ -2,6 +2,42 @@
 
 Prototype Version 1 is a plain HTML, CSS, and JavaScript app. It runs by opening `index.html` in a browser and stores practice, score, streak, and reward data in `localStorage`.
 
+The current version also includes Progressive Web App files for GitHub Pages:
+
+- `manifest.json`
+- `service-worker.js`
+- `icons/icon.svg`
+- `icons/icon-192.png`
+- `icons/icon-512.png`
+- `icons/apple-touch-icon.png`
+
+When hosted on GitHub Pages, the app can be installed to a phone or tablet Home Screen and can cache its main files for offline use after the first successful visit.
+
+## GitHub Pages
+
+Upload the project files to a GitHub repository and enable GitHub Pages from the repository settings. Use the repository root as the Pages source.
+
+The PWA paths use relative URLs, so the app works both at a custom domain and at a GitHub Pages project URL such as:
+
+`https://username.github.io/violin-adventure/`
+
+## Add To Home Screen On iPad Or iPhone
+
+1. Open the GitHub Pages app URL in Safari.
+2. Wait for the app to finish loading.
+3. Tap the Share button.
+4. Choose Add to Home Screen.
+5. Keep the name or rename it.
+6. Tap Add.
+
+After installing, open Violin Adventure from the Home Screen icon. Visit once while online before relying on offline mode, so Safari has a chance to cache the app files.
+
+## Offline Notes
+
+The service worker caches the main app shell: HTML, CSS, JavaScript, manifest, and icons. Practice records, reward data, and settings remain stored in the device browser with `localStorage`.
+
+Offline caching requires a secure origin. GitHub Pages uses HTTPS, so it is compatible. Opening the files directly with `file://` still works for normal app use, but service-worker offline caching is only available from a web server or GitHub Pages.
+
 ## Note-To-Violin Mapping
 
 The game uses beginner violin note locations with strings displayed from top to bottom as E, A, D, G:
@@ -77,13 +113,13 @@ Checkpoint 3 adds local progress records. Earned points are stored in `localStor
 
 ## Point System
 
-Game and practice modes now use 10-question rounds. A round earns 1 point only when all 10 questions are answered correctly with no misses. If the student misses one or more questions, the round can still be completed, but it earns 0 points.
+Game and practice modes use 10-question rounds. A round earns 1 point only when all 10 questions are answered correctly on the first try. If the student misses a question, the app gives one encouraging second try for learning, but that round no longer counts as perfect.
 
-Daily violin practice can also earn 1 point. If the student records more than 15 minutes of real violin practice, the app awards 1 practice point for that calendar date. Practice points are stored in `localStorage` under `liamPracticePointDates`, so the same date cannot be counted twice.
+Real violin practice also earns points. Every full 15 minutes of accumulated practice earns 1 point, even across multiple practice sessions. Accumulated practice minutes are stored in `localStorage` under `liamPracticeTotalMinutes`, and awarded practice points are stored under `liamPracticePointsAwarded`. Older once-per-day practice data is preserved and used as a starting point when those newer values do not exist yet.
 
 ## Reward Bank
 
-The reward area is a flexible family reward bank. Total earned points come from perfect 10-question rounds and daily practice points. Total redeemed points come from parent or child reward redemptions. Remaining points are calculated as:
+The reward area is a flexible family reward bank. Total earned points come from perfect 10-question rounds and accumulated real-practice points. Total redeemed points come from parent or child reward redemptions. Remaining points are calculated as:
 
 `remaining points = total earned points - total redeemed points`
 
