@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Liam's Violin Adventure</title>
+    <title>Violin Adventure</title>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -11,72 +11,90 @@
       <section class="hero">
         <div>
           <p class="eyebrow">Daily practice quest</p>
-          <h1>Liam's Violin Adventure</h1>
+          <h1>Violin Adventure</h1>
+          <p id="todayDate" class="today-date">Thursday, June 11, 2026</p>
         </div>
         <div class="level-badge" aria-live="polite">
-          <span>Reward Level</span>
+          <span>Reward Status</span>
           <strong id="rewardLevel">Keep Practicing!</strong>
+          <button id="parentViewButton" class="secondary-button parent-view-button" type="button">Parent View</button>
         </div>
       </section>
 
       <section class="dashboard" aria-label="Practice and total points">
-        <article class="panel practice-panel">
-          <h2>Practice Check-In</h2>
-          <p id="practiceStatus" class="status-text">Ready for today's practice?</p>
-
-          <label for="minutesInput">Minutes practiced</label>
-          <div class="practice-controls">
-            <input id="minutesInput" type="number" min="1" max="240" inputmode="numeric" placeholder="15">
-            <button id="practiceButton" type="button">I practiced today</button>
-          </div>
-        </article>
-
-        <article class="panel score-panel">
+        <article class="panel score-panel points-panel">
           <h2>Total Points</h2>
-          <div class="total-score" id="totalScoreValue">0</div>
-          <p>Reward badges unlock from points earned across all levels.</p>
+          <div class="points-overview">
+            <div class="total-score" id="totalScoreValue">0</div>
+            <div>
+              <p class="point-rules">You earn 1 point when you complete 10 questions perfectly. If you miss any question, that round earns 0 points. You can also earn 1 point each day by practicing violin for more than 15 minutes.</p>
+              <p id="practiceStatus" class="status-text welcome-status">Ready for today's practice? 🎻</p>
+            </div>
+          </div>
+          <div class="period-points compact-points">
+            <div><span>Today</span><strong id="todayPoints">0</strong></div>
+            <div><span>This Week</span><strong id="weekPoints">0</strong></div>
+            <div><span>This Month</span><strong id="monthPoints">0</strong></div>
+            <div><span>This Year</span><strong id="yearPoints">0</strong></div>
+          </div>
         </article>
       </section>
 
-      <section class="panel game-panel" aria-label="Five level note reading game">
+      <section class="panel game-panel" aria-label="Violin training game">
         <div class="game-header">
           <div>
-            <p class="eyebrow">Note Reading Game</p>
-            <h2 id="modeTitle">Level 1: Staff to Violin Location</h2>
+            <p class="eyebrow">Training</p>
+            <h2 id="modeTitle">Staff to Violin Location</h2>
             <p id="modeInstructions" class="mode-instructions">Tap the exact string and finger position.</p>
           </div>
           <div class="game-actions">
-            <button id="playNoteButton" class="secondary-button audio-button" type="button">Play note</button>
+            <button id="mappingButton" class="secondary-button mapping-button" type="button">How Notes Map to the Violin</button>
             <button id="newNoteButton" class="secondary-button" type="button">New challenge</button>
           </div>
         </div>
 
-        <div id="modeButtons" class="mode-grid" aria-label="Choose a game mode"></div>
-
-        <div id="customPracticePanel" class="custom-practice-panel" aria-label="Custom practice settings">
-          <div>
-            <h3>Custom Practice</h3>
-            <p>Choose strings and finger difficulty for the next 10-note run.</p>
-          </div>
-          <fieldset class="string-options">
-            <legend>Strings</legend>
-            <label><input type="checkbox" name="customString" value="G" checked> G string</label>
-            <label><input type="checkbox" name="customString" value="D" checked> D string</label>
-            <label><input type="checkbox" name="customString" value="A" checked> A string</label>
-            <label><input type="checkbox" name="customString" value="E" checked> E string</label>
-          </fieldset>
-          <label class="difficulty-select" for="customDifficulty">
-            Difficulty
-            <select id="customDifficulty">
-              <option value="0">Open strings only</option>
-              <option value="1">Open + 1st finger</option>
-              <option value="2">Open + 1st + 2nd finger</option>
-              <option value="3" selected>Open + 1st + 2nd + 3rd finger</option>
+        <div class="control-panel" aria-label="Training and practice controls">
+          <label class="control-select" for="trainingModeSelect">
+            Training Mode
+            <select id="trainingModeSelect"></select>
+          </label>
+          <label class="control-select" for="practiceModeSelect">
+            Practice Mode
+            <select id="practiceModeSelect"></select>
+          </label>
+          <label class="control-select" for="difficultySelect">
+            Difficulty Level
+            <select id="difficultySelect">
+              <option value="0">Difficulty 1: Open Strings Only</option>
+              <option value="1">Difficulty 2: Open + 1st Finger</option>
+              <option value="2">Difficulty 3: Open + 1st + 2nd Finger</option>
+              <option value="3">Difficulty 4: Open through 3rd Finger</option>
+              <option value="4" selected>Difficulty 5: Open through 4th Finger</option>
             </select>
           </label>
         </div>
 
-        <div id="levelScoreGrid" class="level-score-grid" aria-label="Score and streak by mode"></div>
+        <div class="current-context" aria-label="Current settings">
+          <div><span>Current Mode</span><strong id="currentModeLabel">Staff to Violin Location</strong></div>
+          <div><span>Difficulty</span><strong id="currentDifficultyLabel">Difficulty 5</strong></div>
+          <div><span>Note Pool</span><strong id="currentPoolLabel">All Notes</strong></div>
+        </div>
+
+        <p id="poolWarning" class="pool-warning" aria-live="polite"></p>
+
+        <div id="customPracticePanel" class="custom-practice-panel" aria-label="Custom practice settings">
+          <div>
+            <h3>Custom Practice</h3>
+            <p>Choose strings for the next 10-note run. The global difficulty level still applies.</p>
+          </div>
+          <fieldset class="string-options">
+            <legend>Strings</legend>
+            <label><input type="checkbox" name="customString" value="E" checked> E string</label>
+            <label><input type="checkbox" name="customString" value="A" checked> A string</label>
+            <label><input type="checkbox" name="customString" value="D" checked> D string</label>
+            <label><input type="checkbox" name="customString" value="G" checked> G string</label>
+          </fieldset>
+        </div>
 
         <div class="game-layout">
           <div class="staff-card">
@@ -88,6 +106,19 @@
               <g id="ledgerLines"></g>
               <g id="noteGroup"></g>
             </svg>
+            <div id="listeningPrompt" class="listening-prompt" aria-live="polite">
+              <strong>Listen carefully</strong>
+              <span class="listening-instruction">Then tap the violin location.</span>
+              <button id="earViolinCue" class="violin-cue-button" type="button" aria-label="Tap the violin location area">
+                <span class="violin-shape" aria-hidden="true">
+                  <span class="violin-neck"></span>
+                  <span class="violin-body"></span>
+                  <span class="violin-strings"></span>
+                </span>
+                <span class="violin-cue-text">Tap the violin board</span>
+              </button>
+              <button id="playNoteButton" class="secondary-button audio-button" type="button">Replay Note</button>
+            </div>
             <p id="melodyProgress" class="melody-progress"></p>
             <p id="practiceSequence" class="practice-sequence" aria-live="polite"></p>
             <p id="melodyAnswer" class="melody-answer" aria-live="polite"></p>
@@ -101,6 +132,7 @@
                 <span>1st</span>
                 <span>2nd</span>
                 <span>3rd</span>
+                <span>4th</span>
               </div>
               <div id="fingerboard" class="fingerboard" aria-label="Violin fingerboard answer buttons"></div>
             </div>
@@ -113,36 +145,125 @@
         <p id="gameFeedback" class="feedback" aria-live="polite">Tap the answer.</p>
       </section>
 
-      <section class="panel mapping-panel" aria-label="Violin note mapping">
-        <h2>How Notes Map To The Violin</h2>
-        <div class="mapping-grid">
-          <div><strong>G string</strong><span>G open, A first, B second, C third</span></div>
-          <div><strong>D string</strong><span>D open, E first, F# second, G third</span></div>
-          <div><strong>A string</strong><span>A open, B first, C# second, D third</span></div>
-          <div><strong>E string</strong><span>E open, F# first, G# second, A third</span></div>
+      <section class="panel progress-summary" aria-label="Practice check-in and progress summary">
+        <div class="summary-header">
+          <div>
+            <p class="eyebrow">Practice</p>
+            <h2>Practice Check-In & Record</h2>
+          </div>
+          <div class="progress-actions">
+            <button id="saveProgressButton" class="secondary-button" type="button">Save Progress</button>
+            <button id="resetProgressButton" class="danger-button" type="button">Reset Progress</button>
+          </div>
+        </div>
+        <p id="progressMessage" class="progress-message" aria-live="polite"></p>
+        <div class="practice-record-layout">
+          <article class="practice-panel">
+            <h3>Daily Practice Check-In</h3>
+            <label for="minutesInput">Minutes practiced</label>
+            <div class="practice-controls">
+              <input id="minutesInput" type="number" min="1" max="240" inputmode="numeric" placeholder="15">
+              <button id="practiceButton" type="button">I practiced today</button>
+            </div>
+          </article>
+          <div class="record-grid">
+            <article>
+              <h3>Weekly Record</h3>
+              <p id="weeklyRange" class="record-range"></p>
+              <div id="weeklyRecord" class="record-list"></div>
+            </article>
+            <article>
+              <h3>Monthly Record</h3>
+              <p id="monthlyRange" class="record-range"></p>
+              <div id="monthlyRecord" class="record-list"></div>
+            </article>
+            <article>
+              <h3>Yearly Record</h3>
+              <p id="yearlyRange" class="record-range"></p>
+              <div id="yearlyRecord" class="record-list"></div>
+            </article>
+          </div>
         </div>
       </section>
 
-      <section class="rewards" aria-label="Reward levels">
-        <h2>Reward Badges</h2>
-        <div class="reward-list">
-          <div class="reward-card" data-points="5">
-            <span>5 points</span>
-            <strong>Pichu Violinist</strong>
+      <div id="mappingModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="mappingTitle">
+        <div class="modal-panel">
+          <div class="modal-header">
+            <h2 id="mappingTitle">How Notes Map To The Violin</h2>
+            <button id="closeMappingButton" class="secondary-button" type="button">Back to Game</button>
           </div>
-          <div class="reward-card" data-points="10">
-            <span>10 points</span>
-            <strong>Pikachu Performer</strong>
-          </div>
-          <div class="reward-card" data-points="20">
-            <span>20 points</span>
-            <strong>Raichu Musician</strong>
-          </div>
-          <div class="reward-card" data-points="30">
-            <span>30 points</span>
-            <strong>Master Trainer of Music</strong>
+          <div class="mapping-grid">
+            <div><strong>E string</strong><span>E open, F# first, G# second, A third, B fourth</span></div>
+            <div><strong>A string</strong><span>A open, B first, C# second, D third, E fourth</span></div>
+            <div><strong>D string</strong><span>D open, E first, F# second, G third, A fourth</span></div>
+            <div><strong>G string</strong><span>G open, A first, B second, C third, D fourth</span></div>
           </div>
         </div>
+      </div>
+
+      <div id="parentModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="parentViewTitle">
+        <div class="modal-panel">
+          <div class="modal-header">
+            <div>
+              <p class="eyebrow">Parent View</p>
+              <h2 id="parentViewTitle">Detailed Practice Stats</h2>
+            </div>
+            <button id="closeParentViewButton" class="secondary-button" type="button">Back to Game</button>
+          </div>
+          <p class="parent-note">Mode-by-mode scores and streaks are kept here so the main screen can stay simple.</p>
+          <div id="levelScoreGrid" class="level-score-grid" aria-label="Score and streak by mode"></div>
+        </div>
+      </div>
+
+      <section class="panel rewards" aria-label="Reward bank">
+        <div class="reward-header">
+          <div>
+            <p class="eyebrow">Rewards</p>
+            <h2>Reward Bank</h2>
+          </div>
+          <div class="reward-balances">
+            <div><span>Earned</span><strong id="rewardCurrentPoints">0</strong></div>
+            <div><span>Redeemed</span><strong id="rewardRedeemedPoints">0</strong></div>
+            <div><span>Available</span><strong id="rewardRemainingPoints">0</strong></div>
+          </div>
+        </div>
+
+        <div class="next-reward-card reward-guide">
+          <span>Reward Goal</span>
+          <strong id="nextRewardText">Add a family reward to begin.</strong>
+          <div class="reward-progress-track" aria-label="Progress toward next reward">
+            <div id="rewardProgressFill" class="reward-progress-fill"></div>
+          </div>
+          <p id="rewardProgressText">Create rewards with your own point costs. Suggestions are ideas only.</p>
+        </div>
+
+        <div class="reward-form-panel">
+          <div>
+            <h3 id="rewardFormTitle">Create a Reward</h3>
+            <p>Choose a family reward and decide how many points it costs.</p>
+          </div>
+          <label for="rewardNameInput">
+            Reward Name
+            <input id="rewardNameInput" type="text" placeholder="New LEGO set">
+          </label>
+          <label for="rewardPointsInput">
+            Reward Cost (points)
+            <input id="rewardPointsInput" type="number" min="1" inputmode="numeric" placeholder="25">
+          </label>
+          <button id="addRewardButton" type="button">Add Reward</button>
+          <button id="cancelRewardEditButton" class="secondary-button is-hidden" type="button">Cancel Edit</button>
+        </div>
+        <p id="rewardMessage" class="reward-message" aria-live="polite"></p>
+
+        <h3>Your Rewards</h3>
+        <div id="customRewardsList" class="custom-reward-list"></div>
+
+        <h3>Suggested Reward Ideas</h3>
+        <p class="suggestion-note">These are examples only. Families choose the reward names and point costs.</p>
+        <div id="suggestedRewardsList" class="reward-list"></div>
+
+        <h3>Redemption History</h3>
+        <div id="redemptionHistoryList" class="record-list"></div>
       </section>
     </main>
 
