@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Liam's Violin Adventure</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="hero">
+        <div>
+          <p class="eyebrow">Daily practice quest</p>
+          <h1>Liam's Violin Adventure</h1>
+        </div>
+        <div class="level-badge" aria-live="polite">
+          <span>Reward Level</span>
+          <strong id="rewardLevel">Keep Practicing!</strong>
+        </div>
+      </section>
+
+      <section class="dashboard" aria-label="Practice and total points">
+        <article class="panel practice-panel">
+          <h2>Practice Check-In</h2>
+          <p id="practiceStatus" class="status-text">Ready for today's practice?</p>
+
+          <label for="minutesInput">Minutes practiced</label>
+          <div class="practice-controls">
+            <input id="minutesInput" type="number" min="1" max="240" inputmode="numeric" placeholder="15">
+            <button id="practiceButton" type="button">I practiced today</button>
+          </div>
+        </article>
+
+        <article class="panel score-panel">
+          <h2>Total Points</h2>
+          <div class="total-score" id="totalScoreValue">0</div>
+          <p>Reward badges unlock from points earned across all levels.</p>
+        </article>
+      </section>
+
+      <section class="panel game-panel" aria-label="Five level note reading game">
+        <div class="game-header">
+          <div>
+            <p class="eyebrow">Note Reading Game</p>
+            <h2 id="modeTitle">Level 1: Staff to Violin Location</h2>
+            <p id="modeInstructions" class="mode-instructions">Tap the exact string and finger position.</p>
+          </div>
+          <div class="game-actions">
+            <button id="playNoteButton" class="secondary-button audio-button" type="button">Play note</button>
+            <button id="newNoteButton" class="secondary-button" type="button">New challenge</button>
+          </div>
+        </div>
+
+        <div id="modeButtons" class="mode-grid" aria-label="Choose a game mode"></div>
+
+        <div id="customPracticePanel" class="custom-practice-panel" aria-label="Custom practice settings">
+          <div>
+            <h3>Custom Practice</h3>
+            <p>Choose strings and finger difficulty for the next 10-note run.</p>
+          </div>
+          <fieldset class="string-options">
+            <legend>Strings</legend>
+            <label><input type="checkbox" name="customString" value="G" checked> G string</label>
+            <label><input type="checkbox" name="customString" value="D" checked> D string</label>
+            <label><input type="checkbox" name="customString" value="A" checked> A string</label>
+            <label><input type="checkbox" name="customString" value="E" checked> E string</label>
+          </fieldset>
+          <label class="difficulty-select" for="customDifficulty">
+            Difficulty
+            <select id="customDifficulty">
+              <option value="0">Open strings only</option>
+              <option value="1">Open + 1st finger</option>
+              <option value="2">Open + 1st + 2nd finger</option>
+              <option value="3" selected>Open + 1st + 2nd + 3rd finger</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="levelScoreGrid" class="level-score-grid" aria-label="Score and streak by mode"></div>
+
+        <div class="game-layout">
+          <div class="staff-card">
+            <svg id="staffSvg" class="staff-svg" viewBox="0 0 620 210" role="img" aria-labelledby="staffTitle staffDescription">
+              <title id="staffTitle">Treble clef staff challenge</title>
+              <desc id="staffDescription">A treble clef staff showing the note or melody for the current challenge.</desc>
+              <g id="staffLines"></g>
+              <text x="38" y="132" class="clef">&#119070;</text>
+              <g id="ledgerLines"></g>
+              <g id="noteGroup"></g>
+            </svg>
+            <p id="melodyProgress" class="melody-progress"></p>
+            <p id="practiceSequence" class="practice-sequence" aria-live="polite"></p>
+            <p id="melodyAnswer" class="melody-answer" aria-live="polite"></p>
+          </div>
+
+          <div class="answer-card">
+            <div id="fingerboardPanel">
+              <div class="fingerboard-heading">
+                <span>String</span>
+                <span>Open</span>
+                <span>1st</span>
+                <span>2nd</span>
+                <span>3rd</span>
+              </div>
+              <div id="fingerboard" class="fingerboard" aria-label="Violin fingerboard answer buttons"></div>
+            </div>
+
+            <div id="stringPanel" class="choice-panel" aria-label="String answer buttons"></div>
+            <div id="fingerPanel" class="choice-panel" aria-label="Finger answer buttons"></div>
+          </div>
+        </div>
+
+        <p id="gameFeedback" class="feedback" aria-live="polite">Tap the answer.</p>
+      </section>
+
+      <section class="panel mapping-panel" aria-label="Violin note mapping">
+        <h2>How Notes Map To The Violin</h2>
+        <div class="mapping-grid">
+          <div><strong>G string</strong><span>G open, A first, B second, C third</span></div>
+          <div><strong>D string</strong><span>D open, E first, F# second, G third</span></div>
+          <div><strong>A string</strong><span>A open, B first, C# second, D third</span></div>
+          <div><strong>E string</strong><span>E open, F# first, G# second, A third</span></div>
+        </div>
+      </section>
+
+      <section class="rewards" aria-label="Reward levels">
+        <h2>Reward Badges</h2>
+        <div class="reward-list">
+          <div class="reward-card" data-points="5">
+            <span>5 points</span>
+            <strong>Pichu Violinist</strong>
+          </div>
+          <div class="reward-card" data-points="10">
+            <span>10 points</span>
+            <strong>Pikachu Performer</strong>
+          </div>
+          <div class="reward-card" data-points="20">
+            <span>20 points</span>
+            <strong>Raichu Musician</strong>
+          </div>
+          <div class="reward-card" data-points="30">
+            <span>30 points</span>
+            <strong>Master Trainer of Music</strong>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
