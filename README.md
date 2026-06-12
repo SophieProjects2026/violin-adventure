@@ -13,6 +13,12 @@ The current version also includes Progressive Web App files for GitHub Pages:
 
 When hosted on GitHub Pages, the app can be installed to a phone or tablet Home Screen and can cache its main files for offline use after the first successful visit.
 
+## Bilingual Support
+
+The app supports English and Simplified Chinese. Use the language switcher near the top of the app to choose English or 中文.
+
+The selected language is saved in `localStorage` under `violinAdventureLanguage`, so the app remembers the choice after a refresh. User-facing app text is kept in the `I18N` translation object in `app.js`. Musical note names such as G, F#, and C# stay unchanged, while violin strings display as `E string`, `A string`, `D string`, `G string` in English and `E弦`, `A弦`, `D弦`, `G弦` in Chinese.
+
 ## GitHub Pages
 
 Upload the project files to a GitHub repository and enable GitHub Pages from the repository settings. Use the repository root as the Pages source.

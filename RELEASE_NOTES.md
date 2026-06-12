@@ -12,6 +12,7 @@ This version expands the original Violin Adventure prototype into a more complet
 - Kept the app fully offline with plain HTML, CSS, and JavaScript.
 - Preserved browser-only usage by opening `index.html`.
 - Continued using `localStorage` for saved progress, settings, rewards, and practice records.
+- Added bilingual English and Simplified Chinese support with a saved language switcher.
 
 ### Training Modes
 
