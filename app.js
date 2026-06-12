@@ -365,6 +365,7 @@ const I18N = {
     questionStatus: "Question {current} of {total}. {status}",
     audioQuestionStatus: "Question {current} of 10. Listen, then choose the location. {status}",
     melodyStatus: "Melody note {current} of {total}. {status}",
+    melodyQuestionStatus: "Melody {current} of {total}. {status}",
     practiceStatus: "Practice note {current} of {total}. {status}",
     correct: "Correct!",
     secondTryCorrect: "Good job! You found it.",
@@ -574,6 +575,7 @@ const I18N = {
     questionStatus: "第 {current}/{total} 题。{status}",
     audioQuestionStatus: "第 {current}/10 题。仔细听，然后找位置。{status}",
     melodyStatus: "旋律第 {current}/{total} 个音。{status}",
+    melodyQuestionStatus: "第 {current}/{total} 条旋律。{status}",
     practiceStatus: "练习第 {current}/{total} 个音。{status}",
     correct: "答对了！",
     secondTryCorrect: "做得真棒！你找到了。",
@@ -738,6 +740,10 @@ function stringText(stringName) {
   return t("stringName", { string: stringName });
 }
 
+function stringButtonText(stringName) {
+  return stringName;
+}
+
 function fingerText(fingerValue) {
   return I18N[currentLanguage].fingers[fingerValue] || "";
 }
@@ -819,7 +825,7 @@ function applyStaticTranslations() {
   document.querySelectorAll(".string-options label").forEach((label, index) => {
     const input = label.querySelector("input");
     const stringName = STRINGS[index];
-    label.textContent = ` ${stringText(stringName)}`;
+    label.textContent = ` ${stringButtonText(stringName)}`;
     label.prepend(input);
   });
 
@@ -1200,6 +1206,19 @@ function createRewardSuggestionCard(suggestion) {
   return card;
 }
 
+function rewardProgressColor(percent) {
+  const clamped = Math.max(0, Math.min(100, percent));
+  const hue = Math.round((clamped / 100) * 120);
+  const lightness = clamped >= 100 ? 42 : 50;
+  return `hsl(${hue} 86% ${lightness}%)`;
+}
+
+function setRewardProgress(percent) {
+  const clamped = Math.max(0, Math.min(100, percent));
+  rewardProgressFill.style.width = `${clamped}%`;
+  rewardProgressFill.style.background = rewardProgressColor(clamped);
+}
+
 function updateRewardTracker() {
   const totalScore = getTotalScore();
   const redeemedPoints = getRedeemedPoints();
@@ -1215,7 +1234,7 @@ function updateRewardTracker() {
   if (readyRewards.length) {
     const bestReward = readyRewards[readyRewards.length - 1];
     nextRewardText.textContent = t("youCanGet", { reward: bestReward.name });
-    rewardProgressFill.style.width = "100%";
+    setRewardProgress(100);
     rewardProgressText.textContent = t("chooseRewardToRedeem", { points: remainingPoints });
   } else if (nextReward) {
     const cost = Number(nextReward.cost);
@@ -1226,11 +1245,11 @@ function updateRewardTracker() {
       plural: plural(pointsNeeded),
       reward: nextReward.name
     });
-    rewardProgressFill.style.width = `${percent}%`;
+    setRewardProgress(percent);
     rewardProgressText.textContent = t("pointsSavedForReward", { current: remainingPoints, cost });
   } else {
     nextRewardText.textContent = t("addFamilyReward");
-    rewardProgressFill.style.width = "0";
+    setRewardProgress(0);
     rewardProgressText.textContent = t("familiesChooseRewards");
   }
 
@@ -1338,14 +1357,18 @@ function renderCustomRewards() {
   customRewards.forEach((reward) => {
     const cost = Number(reward.cost);
     const pointsNeeded = Math.max(0, cost - remainingPoints);
+    const percent = cost > 0 ? Math.max(0, Math.min(100, (remainingPoints / cost) * 100)) : 0;
+    const progressColor = rewardProgressColor(percent);
     const card = document.createElement("div");
     card.className = "custom-reward-card";
+    card.style.borderColor = progressColor;
 
     const details = document.createElement("div");
     const status = document.createElement("span");
     const title = document.createElement("strong");
     const helper = document.createElement("p");
     status.textContent = pointsNeeded ? t("morePointsNeeded", { points: pointsNeeded, plural: plural(pointsNeeded) }) : t("readyToRedeem");
+    status.style.color = progressColor;
     title.textContent = reward.name;
     helper.textContent = t("rewardPointCost", { points: cost, plural: plural(cost) });
     details.append(status, title, helper);
@@ -1905,6 +1928,62 @@ function buildNoteSequence(length) {
   return notes;
 }
 
+function buildMelodyQuestion() {
+  const melodyLength = 3 + Math.floor(Math.random() * 3);
+  return buildNoteSequence(melodyLength);
+}
+
+function melodyQuestionStatusText(status) {
+  return t("melodyQuestionStatus", {
+    current: Math.min(roundState.answered + 1, roundState.total),
+    total: roundState.total,
+    status
+  });
+}
+
+function startMelodyQuestion() {
+  clearChoiceMarks();
+  currentMelody = buildMelodyQuestion();
+  melodyIndex = 0;
+  currentNote = currentMelody[0];
+  startQuestionAttempt();
+  melodyAnswer.textContent = "";
+
+  if (!currentNote) {
+    gameFeedback.textContent = t("noMatchingNotes");
+    return;
+  }
+
+  drawMelody();
+  melodyProgress.textContent = melodyQuestionStatusText(roundState.missed ? t("learningRound") : t("perfectSoFar"));
+  gameFeedback.textContent = t("tapFirstNote");
+}
+
+function finishMelodyQuestion(nextDelay = 1000) {
+  melodyProgress.textContent = t("melodyComplete");
+  melodyAnswer.textContent = currentMelody.map(locationLabel).join(" | ");
+  countCorrectQuestion();
+
+  if (!roundState.complete) {
+    setTimeout(startMelodyQuestion, nextDelay);
+  }
+}
+
+function advanceMelodyNoteOrQuestion() {
+  melodyIndex += 1;
+  clearChoiceMarks();
+
+  if (melodyIndex >= currentMelody.length) {
+    finishMelodyQuestion();
+    return;
+  }
+
+  currentNote = currentMelody[melodyIndex];
+  startQuestionAttempt();
+  melodyProgress.textContent = melodyQuestionStatusText(roundState.missed ? t("learningRound") : t("perfectSoFar"));
+  drawMelody();
+}
+
 function pickNewChallenge() {
   clearChoiceMarks();
   practiceSequence.textContent = "";
@@ -1925,18 +2004,7 @@ function pickNewChallenge() {
   }
 
   if (activeMode.promptType === "melody") {
-    currentMelody = buildNoteSequence(10);
-    melodyIndex = 0;
-    startQuestionAttempt();
-    currentNote = currentMelody[0];
-    if (!currentNote) {
-      gameFeedback.textContent = t("noMatchingNotes");
-      return;
-    }
-
-    drawMelody();
-    melodyProgress.textContent = t("melodyStatus", { current: 1, total: currentMelody.length, status: t("perfectSoFar") });
-    gameFeedback.textContent = t("tapFirstNote");
+    startMelodyQuestion();
     return;
   }
 
@@ -2066,7 +2134,7 @@ function handleWrong(button, target, answerType = activeMode.answerType) {
   }
 
   if (activeMode.promptType === "melody") {
-    melodyProgress.textContent = t("melodyStatus", { current: melodyIndex + 1, total: currentMelody.length, status: t("learningTryAgain") });
+    melodyProgress.textContent = melodyQuestionStatusText(t("learningTryAgain"));
     return roundState.revealing ? "reveal" : "retry";
   }
 
@@ -2139,32 +2207,33 @@ function handleLocationTap(button, stringName, finger) {
     return;
   }
 
+  if (roundState.revealing) {
+    return;
+  }
+
   const target = activeMode.promptType === "melody" ? currentMelody[melodyIndex] : currentNote;
   const isCorrect = isCorrectLocation(target, stringName, finger);
+
+  if (activeMode.promptType === "melody") {
+    if (!isCorrect) {
+      const result = handleWrong(button, target, "location");
+
+      if (result === "reveal") {
+        setTimeout(advanceMelodyNoteOrQuestion, 1800);
+      }
+
+      return;
+    }
+
+    handleCorrect(button);
+    setTimeout(advanceMelodyNoteOrQuestion, 350);
+    return;
+  }
 
   if (!isCorrect) {
     const result = handleWrong(button, target, "location");
     if (result === "reveal") {
       countCorrectQuestion();
-
-      if (activeMode.promptType === "melody") {
-        melodyIndex += 1;
-
-        if (roundState.complete || melodyIndex >= currentMelody.length) {
-          melodyProgress.textContent = t("melodyComplete");
-          melodyAnswer.textContent = currentMelody.map(locationLabel).join(" | ");
-          return;
-        }
-
-        currentNote = currentMelody[melodyIndex];
-        startQuestionAttempt();
-        setTimeout(() => {
-          clearChoiceMarks();
-          melodyProgress.textContent = t("melodyStatus", { current: melodyIndex + 1, total: currentMelody.length, status: t("learningRound") });
-          drawMelody();
-        }, 1800);
-        return;
-      }
 
       if (!roundState.complete) {
         setTimeout(nextSingleQuestion, 1800);
@@ -2174,37 +2243,18 @@ function handleLocationTap(button, stringName, finger) {
   }
 
   handleCorrect(button);
-
-  if (activeMode.promptType !== "melody") {
-    countCorrectQuestion();
-
-    if (!roundState.complete) {
-      setTimeout(nextSingleQuestion, 850);
-    }
-
-    return;
-  }
-
   countCorrectQuestion();
-  melodyIndex += 1;
 
-  if (roundState.complete || melodyIndex >= currentMelody.length) {
-    melodyProgress.textContent = t("melodyComplete");
-    melodyAnswer.textContent = currentMelody.map(locationLabel).join(" | ");
-    return;
+  if (!roundState.complete) {
+    setTimeout(nextSingleQuestion, 850);
   }
-
-  currentNote = currentMelody[melodyIndex];
-  startQuestionAttempt();
-  melodyProgress.textContent = t("melodyStatus", {
-    current: melodyIndex + 1,
-    total: currentMelody.length,
-    status: roundState.missed ? t("learningRound") : t("perfectSoFar")
-  });
-  drawMelody();
 }
 
 function handlePracticeTap(button, stringName, finger) {
+  if (roundState.revealing) {
+    return;
+  }
+
   const target = practiceRun.notes[practiceRun.index];
   const isCorrect = isCorrectLocation(target, stringName, finger);
 
@@ -2344,7 +2394,7 @@ function createFingerboard() {
 
     const label = document.createElement("div");
     label.className = "string-label";
-    label.textContent = stringText(stringName);
+    label.textContent = stringButtonText(stringName);
     row.appendChild(label);
 
     FINGERS.forEach((finger) => {
@@ -2375,7 +2425,8 @@ function createChoicePanels() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "choice-button";
-    button.textContent = stringText(stringName);
+    button.textContent = stringButtonText(stringName);
+    button.setAttribute("aria-label", stringText(stringName));
     button.addEventListener("click", () => handleStringTap(button, stringName));
     stringPanel.appendChild(button);
   });

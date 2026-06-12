@@ -1062,8 +1062,8 @@ button:active {
   width: 0;
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--leaf), var(--sun));
-  transition: width 220ms ease;
+  background: #dc2626;
+  transition: width 220ms ease, background 220ms ease;
 }
 
 .rewards h3 {

@@ -17,7 +17,7 @@ When hosted on GitHub Pages, the app can be installed to a phone or tablet Home 
 
 The app supports English and Simplified Chinese. Use the language switcher near the top of the app to choose English or 中文.
 
-The selected language is saved in `localStorage` under `violinAdventureLanguage`, so the app remembers the choice after a refresh. User-facing app text is kept in the `I18N` translation object in `app.js`. Musical note names such as G, F#, and C# stay unchanged, while violin strings display as `E string`, `A string`, `D string`, `G string` in English and `E弦`, `A弦`, `D弦`, `G弦` in Chinese.
+The selected language is saved in `localStorage` under `violinAdventureLanguage`, so the app remembers the choice after a refresh. User-facing app text is kept in the `I18N` translation object in `app.js`. Musical note names such as G, F#, and C# stay unchanged. Answer buttons use compact violin string labels: `E`, `A`, `D`, and `G`.
 
 ## GitHub Pages
 
