@@ -176,9 +176,9 @@ const STAFF_TOP_Y = 66;
 const STAFF_BOTTOM_Y = 138;
 const STAFF_LINE_SPACING = 18;
 const STAFF_STEP = STAFF_LINE_SPACING / 2;
-const LEDGER_EXTENSION = 25;
-const NOTE_HEAD_RX = 21;
-const NOTE_HEAD_RY = 16;
+const LEDGER_EXTENSION = 27;
+const NOTE_HEAD_RX = 18;
+const NOTE_HEAD_RY = 7;
 const FINGERS = [
   { value: 0, label: "Open", longLabel: "open string" },
   { value: 1, label: "1", longLabel: "first finger" },
@@ -1780,7 +1780,7 @@ function drawNote(note, x, options = {}) {
     class: noteClass
   }));
 
-  const stemX = y < 96 ? x - 20 : x + 20;
+  const stemX = y < 96 ? x - NOTE_HEAD_RX : x + NOTE_HEAD_RX;
   noteGroup.appendChild(makeSvgElement("line", {
     x1: stemX,
     x2: stemX,
