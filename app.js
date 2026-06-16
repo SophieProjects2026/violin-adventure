@@ -172,6 +172,13 @@ const DIFFICULTIES = [
 ];
 
 const STRINGS = ["E", "A", "D", "G"];
+const STAFF_TOP_Y = 66;
+const STAFF_BOTTOM_Y = 138;
+const STAFF_LINE_SPACING = 18;
+const STAFF_STEP = STAFF_LINE_SPACING / 2;
+const LEDGER_EXTENSION = 25;
+const NOTE_HEAD_RX = 20;
+const NOTE_HEAD_RY = 13;
 const FINGERS = [
   { value: 0, label: "Open", longLabel: "open string" },
   { value: 1, label: "1", longLabel: "first finger" },
@@ -1703,8 +1710,8 @@ function drawStaffLines() {
     staffLines.appendChild(makeSvgElement("line", {
       x1: 104,
       x2: 580,
-      y1: 66 + index * 18,
-      y2: 66 + index * 18,
+      y1: STAFF_TOP_Y + index * STAFF_LINE_SPACING,
+      y2: STAFF_TOP_Y + index * STAFF_LINE_SPACING,
       class: "staff-line"
     }));
   }
@@ -1718,15 +1725,15 @@ function pitchToY(pitch) {
   const pitchStep = octave * 7 + letterOrder[letter];
   const bottomLineE4Step = 4 * 7 + letterOrder.E;
 
-  return 138 - (pitchStep - bottomLineE4Step) * 9;
+  return STAFF_BOTTOM_Y - (pitchStep - bottomLineE4Step) * STAFF_STEP;
 }
 
 function drawLedgerLinesForNote(x, y) {
-  for (let ledgerY = 156; ledgerY <= y + 1; ledgerY += 18) {
-    if (ledgerY > 138) {
+  for (let ledgerY = STAFF_BOTTOM_Y + STAFF_LINE_SPACING; ledgerY <= y + 1; ledgerY += STAFF_LINE_SPACING) {
+    if (ledgerY > STAFF_BOTTOM_Y) {
       ledgerLines.appendChild(makeSvgElement("line", {
-        x1: x - 27,
-        x2: x + 27,
+        x1: x - LEDGER_EXTENSION,
+        x2: x + LEDGER_EXTENSION,
         y1: ledgerY,
         y2: ledgerY,
         class: "ledger-line"
@@ -1734,11 +1741,11 @@ function drawLedgerLinesForNote(x, y) {
     }
   }
 
-  for (let ledgerY = 48; ledgerY <= y + 1; ledgerY += 18) {
-    if (ledgerY < 66) {
+  for (let ledgerY = STAFF_TOP_Y - STAFF_LINE_SPACING; ledgerY >= y - 1; ledgerY -= STAFF_LINE_SPACING) {
+    if (ledgerY < STAFF_TOP_Y) {
       ledgerLines.appendChild(makeSvgElement("line", {
-        x1: x - 27,
-        x2: x + 27,
+        x1: x - LEDGER_EXTENSION,
+        x2: x + LEDGER_EXTENSION,
         y1: ledgerY,
         y2: ledgerY,
         class: "ledger-line"
@@ -1768,8 +1775,8 @@ function drawNote(note, x, options = {}) {
   noteGroup.appendChild(makeSvgElement("ellipse", {
     cx: x,
     cy: y,
-    rx: 20,
-    ry: 13,
+    rx: NOTE_HEAD_RX,
+    ry: NOTE_HEAD_RY,
     class: noteClass
   }));
 

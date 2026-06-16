@@ -791,8 +791,8 @@ button:active {
 
 .note-head {
   fill: #26324a;
-  stroke: #fff8df;
-  stroke-width: 1.5;
+  stroke: #26324a;
+  stroke-width: 0.75;
   transform-box: fill-box;
   transform-origin: center;
   rotate: -18deg;
