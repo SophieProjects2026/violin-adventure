@@ -172,13 +172,13 @@ const DIFFICULTIES = [
 ];
 
 const STRINGS = ["E", "A", "D", "G"];
-const STAFF_TOP_Y = 66;
-const STAFF_BOTTOM_Y = 138;
-const STAFF_LINE_SPACING = 18;
+const STAFF_TOP_Y = 62;
+const STAFF_BOTTOM_Y = 142;
+const STAFF_LINE_SPACING = 20;
 const STAFF_STEP = STAFF_LINE_SPACING / 2;
 const LEDGER_EXTENSION = 27;
 const NOTE_HEAD_RX = 18;
-const NOTE_HEAD_RY = 7;
+const NOTE_HEAD_RY = 6;
 const FINGERS = [
   { value: 0, label: "Open", longLabel: "open string" },
   { value: 1, label: "1", longLabel: "first finger" },
