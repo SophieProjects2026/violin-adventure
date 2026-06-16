@@ -1,4 +1,4 @@
-const CACHE_NAME = "violin-adventure-v5";
+const CACHE_NAME = "violin-adventure-v6";
 const APP_SHELL = [
   "./",
   "./index.html",
