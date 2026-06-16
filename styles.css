@@ -795,7 +795,7 @@ button:active {
   stroke-width: 0.75;
   transform-box: fill-box;
   transform-origin: center;
-  rotate: -5deg;
+  rotate: -12deg;
 }
 
 .note-head.is-complete {

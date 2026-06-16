@@ -177,8 +177,8 @@ const STAFF_BOTTOM_Y = 142;
 const STAFF_LINE_SPACING = 20;
 const STAFF_STEP = STAFF_LINE_SPACING / 2;
 const LEDGER_EXTENSION = 27;
-const NOTE_HEAD_RX = 18;
-const NOTE_HEAD_RY = 6;
+const NOTE_HEAD_RX = 18.5;
+const NOTE_HEAD_RY = 7.4;
 const FINGERS = [
   { value: 0, label: "Open", longLabel: "open string" },
   { value: 1, label: "1", longLabel: "first finger" },
