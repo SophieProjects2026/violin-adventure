@@ -186,6 +186,8 @@ input {
 }
 
 select {
+  width: 100%;
+  max-width: 100%;
   min-height: 58px;
   border: 3px solid #d8e0ea;
   border-radius: 8px;
@@ -260,6 +262,7 @@ button:active {
   font-size: 1.1rem;
   font-weight: 900;
   line-height: 1.45;
+  white-space: pre-line;
 }
 
 .compact-points {
@@ -270,6 +273,196 @@ button:active {
 .game-panel,
 .mapping-panel {
   margin-bottom: 18px;
+}
+
+.sinfonietta-panel {
+  display: grid;
+  gap: 16px;
+  margin: 6px 0 18px;
+  border: 3px solid rgba(38, 50, 74, 0.08);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(255, 248, 223, 0.96);
+}
+
+.sinfonietta-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.sinfonietta-intro {
+  margin: 0;
+  color: #47516a;
+  font-size: 1.05rem;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+.sinfonietta-progress {
+  display: grid;
+  gap: 10px;
+}
+
+.sinfonietta-progress strong {
+  color: var(--ink);
+  font-size: 1.15rem;
+}
+
+.sinfonietta-progress-track {
+  height: 20px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #e7edf6;
+}
+
+.sinfonietta-progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--berry), var(--orange), var(--sun), var(--leaf));
+  transition: width 220ms ease;
+}
+
+.extra-practice-card {
+  display: grid;
+  grid-template-columns: 1fr minmax(280px, 420px);
+  gap: 14px;
+  align-items: center;
+  border: 3px solid rgba(38, 50, 74, 0.1);
+  border-radius: 8px;
+  padding: 14px;
+  background: #ffffff;
+}
+
+.extra-practice-card.is-merged {
+  display: none;
+}
+
+.extra-practice-card h3 {
+  margin: 0 0 6px;
+  font-size: 1.12rem;
+}
+
+.extra-practice-card p {
+  margin: 0;
+  color: #47516a;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.extra-practice-controls {
+  display: grid;
+  gap: 10px;
+}
+
+.extra-practice-controls label {
+  margin: 0;
+}
+
+.extra-practice-controls input {
+  min-height: 58px;
+  font-size: 1.15rem;
+}
+
+#extraPracticeBonusText {
+  display: block;
+  margin-top: 10px;
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+
+#extraPracticeBonusText.is-locked {
+  color: #7a8499;
+}
+
+.extra-practice-help {
+  margin: 12px 0 0;
+  color: #47516a;
+  font-weight: 900;
+  line-height: 1.4;
+}
+
+.sinfonietta-checklist {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.sinfonietta-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  min-height: 126px;
+  border: 3px solid rgba(38, 50, 74, 0.1);
+  border-radius: 8px;
+  padding: 14px;
+  background: #ffffff;
+}
+
+.sinfonietta-item.is-complete {
+  border-color: rgba(53, 184, 107, 0.45);
+  background: linear-gradient(145deg, #ffffff, #ebffe9);
+}
+
+.sinfonietta-item h3 {
+  margin: 0 0 8px;
+  font-size: 1.12rem;
+}
+
+.sinfonietta-item p {
+  margin: 0;
+  color: #47516a;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.sinfonietta-check {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  min-width: 112px;
+  margin: 0;
+  text-align: center;
+}
+
+.sinfonietta-check input {
+  width: 34px;
+  min-height: 34px;
+  accent-color: var(--leaf);
+}
+
+.sinfonietta-check span {
+  font-size: 0.95rem;
+}
+
+.sinfonietta-scale-select {
+  width: 100%;
+  margin-top: 8px;
+}
+
+.sinfonietta-text-label {
+  margin: 10px 0 0;
+  color: #47516a;
+  font-size: 0.95rem;
+}
+
+.sinfonietta-text-label input {
+  min-height: 54px;
+  margin-top: 6px;
+  font-size: 1rem;
+}
+
+.sinfonietta-message {
+  min-height: 1.4em;
+  margin: 0;
+  color: var(--leaf);
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1.4;
+  white-space: pre-line;
 }
 
 .summary-header {
@@ -792,10 +985,10 @@ button:active {
 .note-head {
   fill: #26324a;
   stroke: #26324a;
-  stroke-width: 0.75;
+  stroke-width: 0.4;
   transform-box: fill-box;
   transform-origin: center;
-  rotate: -12deg;
+  rotate: -10deg;
 }
 
 .note-head.is-complete {
@@ -1205,6 +1398,9 @@ button:disabled {
   .dashboard,
   .game-header,
   .game-layout,
+  .sinfonietta-header,
+  .extra-practice-card,
+  .sinfonietta-checklist,
   .points-overview,
   .practice-controls,
   .custom-practice-panel,
@@ -1244,6 +1440,15 @@ button:disabled {
     flex: 1 1 190px;
   }
 
+  .sinfonietta-header button,
+  .sinfonietta-check {
+    width: 100%;
+  }
+
+  .sinfonietta-item {
+    grid-template-columns: 1fr;
+  }
+
   .game-actions {
     justify-content: stretch;
   }
@@ -1258,6 +1463,35 @@ button:disabled {
 }
 
 @media (max-width: 520px) {
+  .app-shell {
+    padding: 10px;
+  }
+
+  .panel,
+  .control-panel,
+  .custom-practice-panel,
+  .staff-card,
+  .answer-card,
+  .reward-form-panel {
+    padding: 14px;
+  }
+
+  .control-panel,
+  .control-select,
+  .custom-practice-panel,
+  .current-context,
+  .game-layout,
+  .staff-card,
+  .answer-card,
+  .reward-header,
+  .reward-balances,
+  .reward-form-panel,
+  .custom-reward-card {
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
   .level-score-grid,
   .string-options,
   .choice-panel {
@@ -1276,7 +1510,7 @@ button:disabled {
   }
 
   .finger-button span {
-    min-width: 44px;
-    min-height: 44px;
+    min-width: 40px;
+    min-height: 40px;
   }
 }

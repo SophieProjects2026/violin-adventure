@@ -11,7 +11,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=18">
   </head>
   <body>
     <main class="app-shell">
@@ -38,7 +38,13 @@
           <div class="points-overview">
             <div class="total-score" id="totalScoreValue">0</div>
             <div>
-              <p class="point-rules">You earn 1 point when you complete 10 questions perfectly on the first try. If you miss a question, you can try once more for learning, but that round will not earn a point. You also earn 1 point for every 15 minutes of real violin practice.</p>
+              <p class="point-rules">⭐ You earn 1 point when you complete 20 questions perfectly on the first try.
+
+If you miss a question, you can try once more for learning, but that round will not earn a point.
+
+⭐ Complete all Daily Sinfonietta Practice tasks to earn 2 points each day.
+
+⭐ Every extra 15 minutes of violin practice earns 1 bonus point.</p>
               <p id="practiceStatus" class="status-text welcome-status">Ready for today's practice? &#127931;</p>
             </div>
           </div>
@@ -54,7 +60,7 @@
       <section class="panel game-panel" aria-label="Violin training game">
         <div class="game-header">
           <div>
-            <p class="eyebrow">Training</p>
+            <p class="eyebrow">🎯 Training</p>
             <h2 id="modeTitle">Staff to Violin Location</h2>
             <p id="modeInstructions" class="mode-instructions">Tap the exact string and finger position.</p>
           </div>
@@ -96,7 +102,7 @@
         <div id="customPracticePanel" class="custom-practice-panel" aria-label="Custom practice settings">
           <div>
             <h3>Custom Practice</h3>
-            <p>Choose strings for the next 10-note run. The global difficulty level still applies.</p>
+            <p>Choose strings for the next 20-question run. The global difficulty level still applies.</p>
           </div>
           <fieldset class="string-options">
             <legend>Strings</legend>
@@ -160,7 +166,7 @@
         <div class="summary-header">
           <div>
             <p class="eyebrow">Practice</p>
-            <h2>Practice Check-In & Record</h2>
+            <h2>🎻 Daily Practice</h2>
           </div>
           <div class="progress-actions">
             <button id="saveProgressButton" class="secondary-button" type="button">Save Progress</button>
@@ -168,14 +174,50 @@
           </div>
         </div>
         <p id="progressMessage" class="progress-message" aria-live="polite"></p>
+        <div id="sinfoniettaSection" class="sinfonietta-panel" aria-label="Daily Sinfonietta Practice">
+          <div class="sinfonietta-header">
+            <div>
+              <p class="eyebrow">Daily Orchestra Habit</p>
+              <h2>Sinfonietta Practice</h2>
+              <p class="sinfonietta-intro">Build tone, scales, sight reading, repertoire, and fun playing every day.</p>
+            </div>
+            <button id="pickScalesButton" class="secondary-button" type="button">Pick Today's Scales</button>
+          </div>
+          <div class="sinfonietta-progress" aria-live="polite">
+            <strong id="sinfoniettaProgressText">Daily Practice Progress: 0 / 7 completed</strong>
+            <div class="sinfonietta-progress-track" aria-label="Daily Sinfonietta checklist progress">
+              <div id="sinfoniettaProgressFill" class="sinfonietta-progress-fill"></div>
+            </div>
+          </div>
+          <div id="sinfoniettaChecklist" class="sinfonietta-checklist"></div>
+          <p id="sinfoniettaMessage" class="sinfonietta-message" aria-live="polite"></p>
+          <!-- Extra practice controls are merged into Daily Extra Practice Check-In below. -->
+          <div class="extra-practice-card is-merged" aria-label="Extra practice bonus">
+            <div>
+              <h3>⭐ Extra Practice Time</h3>
+              <p>After Daily Sinfonietta Practice is complete, every extra 15 minutes earns 1 bonus point.</p>
+            </div>
+            <div class="extra-practice-controls">
+              <label for="legacyExtraPracticeMinutesInput">
+                Extra Practice Minutes
+                <input id="legacyExtraPracticeMinutesInput" type="number" min="0" max="240" step="1" inputmode="numeric" value="0">
+              </label>
+              <button id="legacyAddExtraPracticeButton" class="secondary-button" type="button">+15 minutes</button>
+              <strong id="legacyExtraPracticeBonusText">Bonus Points Earned: 0</strong>
+            </div>
+          </div>
+        </div>
         <div class="practice-record-layout">
           <article class="practice-panel">
-            <h3>Daily Practice Check-In</h3>
+            <h3>Daily Extra Practice Check-In</h3>
             <label for="minutesInput">Minutes practiced</label>
             <div class="practice-controls">
-              <input id="minutesInput" type="number" min="1" max="240" inputmode="numeric" placeholder="15">
+              <input id="minutesInput" type="number" min="0" max="240" inputmode="numeric" placeholder="15">
               <button id="practiceButton" type="button">I practiced today</button>
+              <button id="addExtraPracticeButton" class="secondary-button" type="button">+15 minutes</button>
             </div>
+            <p class="extra-practice-help">After Daily Sinfonietta Practice is complete, every extra 15 minutes earns 1 bonus point.</p>
+            <strong id="extraPracticeBonusText">Bonus Points Earned: 0</strong>
           </article>
           <div class="record-grid">
             <article>
@@ -229,8 +271,8 @@
       <section class="panel rewards" aria-label="Reward bank">
         <div class="reward-header">
           <div>
-            <p class="eyebrow">Rewards</p>
-            <h2>Reward Bank</h2>
+            <p class="eyebrow">🏆 Rewards</p>
+            <h2>🏆 Rewards</h2>
           </div>
           <div class="reward-balances">
             <div><span>Earned</span><strong id="rewardCurrentPoints">0</strong></div>
@@ -278,6 +320,6 @@
       </section>
     </main>
 
-    <script src="app.js"></script>
+    <script src="app.js?v=18"></script>
   </body>
 </html>

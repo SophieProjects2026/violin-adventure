@@ -1,9 +1,9 @@
-const CACHE_NAME = "violin-adventure-v9";
+const CACHE_NAME = "violin-adventure-v18";
 const APP_SHELL = [
   "./",
   "./index.html",
-  "./styles.css",
-  "./app.js",
+  "./styles.css?v=18",
+  "./app.js?v=18",
   "./manifest.json",
   "./icons/icon.svg",
   "./icons/icon-192.png",
