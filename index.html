@@ -11,7 +11,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <link rel="stylesheet" href="styles.css?v=20">
+    <link rel="stylesheet" href="styles.css?v=21">
   </head>
   <body>
     <main class="app-shell">
@@ -287,6 +287,11 @@ If you miss a question, you can try once more for learning, but that round will 
                 <input id="adjustPointsInput" type="number" min="1" inputmode="numeric" placeholder="10">
               </label>
               <button id="addRestorePointsButton" type="button">Add Restore Points</button>
+              <label for="deductPointsInput" id="deductPointsLabel">
+                Points to Deduct
+                <input id="deductPointsInput" type="number" min="1" inputmode="numeric" placeholder="5">
+              </label>
+              <button id="deductPointsButton" class="danger-button" type="button">Deduct Points</button>
               <p id="adjustPointsMessage" class="parent-tool-message" aria-live="polite"></p>
             </section>
           </div>
@@ -346,6 +351,6 @@ If you miss a question, you can try once more for learning, but that round will 
       </section>
     </main>
 
-    <script src="app.js?v=20"></script>
+    <script src="app.js?v=21"></script>
   </body>
 </html>

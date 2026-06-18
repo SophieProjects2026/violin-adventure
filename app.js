@@ -318,8 +318,12 @@ const I18N = {
     adjustPointsHelp: "If points were lost during an update, add them back here.",
     adjustPointsLabel: "Points to Add",
     addRestorePoints: "Add Restore Points",
+    deductPointsLabel: "Points to Deduct",
+    deductPoints: "Deduct Points",
     adjustPointsInvalid: "Enter a whole number greater than 0.",
     adjustPointsSuccess: "{points} point{plural} restored.",
+    deductPointsTooMany: "You cannot deduct more points than the current total.",
+    deductPointsSuccess: "{points} point{plural} deducted.",
     rewards: "🏆 Rewards",
     rewardBank: "🏆 Rewards",
     earned: "Earned",
@@ -578,8 +582,12 @@ const I18N = {
     adjustPointsHelp: "如果更新后积分丢失，可以在这里加回来。",
     adjustPointsLabel: "要增加的积分",
     addRestorePoints: "增加恢复积分",
+    deductPointsLabel: "要扣除的积分",
+    deductPoints: "扣除积分",
     adjustPointsInvalid: "请输入大于 0 的整数。",
     adjustPointsSuccess: "已恢复 {points} 分。",
+    deductPointsTooMany: "不能扣除超过当前总积分的分数。",
+    deductPointsSuccess: "已扣除 {points} 分。",
     rewards: "🏆 奖励",
     rewardBank: "🏆 奖励",
     earned: "已获得",
@@ -777,6 +785,8 @@ const progressBackupText = document.getElementById("progressBackupText");
 const backupMessage = document.getElementById("backupMessage");
 const adjustPointsInput = document.getElementById("adjustPointsInput");
 const addRestorePointsButton = document.getElementById("addRestorePointsButton");
+const deductPointsInput = document.getElementById("deductPointsInput");
+const deductPointsButton = document.getElementById("deductPointsButton");
 const adjustPointsMessage = document.getElementById("adjustPointsMessage");
 const todayPoints = document.getElementById("todayPoints");
 const weekPoints = document.getElementById("weekPoints");
@@ -1019,6 +1029,8 @@ function applyStaticTranslations() {
   setText("#adjustPointsHelp", t("adjustPointsHelp"));
   setControlLabelText("label[for='adjustPointsInput']", t("adjustPointsLabel"));
   addRestorePointsButton.textContent = t("addRestorePoints");
+  setControlLabelText("label[for='deductPointsInput']", t("deductPointsLabel"));
+  deductPointsButton.textContent = t("deductPoints");
 
   setText(".rewards .eyebrow", t("rewards"));
   setText(".rewards h2", t("rewardBank"));
@@ -2096,6 +2108,30 @@ function addRestorePoints() {
   updateScoreDisplay();
 }
 
+function deductParentPoints() {
+  const pointsToDeduct = Number(deductPointsInput.value);
+
+  if (!Number.isInteger(pointsToDeduct) || pointsToDeduct <= 0) {
+    adjustPointsMessage.textContent = t("adjustPointsInvalid");
+    return;
+  }
+
+  if (pointsToDeduct > getTotalScore()) {
+    adjustPointsMessage.textContent = t("deductPointsTooMany");
+    return;
+  }
+
+  practicePointsAwarded -= pointsToDeduct;
+  savePracticePointsAwarded();
+  recordPointEarned("parent-deduct", -pointsToDeduct);
+  deductPointsInput.value = "";
+  adjustPointsMessage.textContent = t("deductPointsSuccess", {
+    points: pointsToDeduct,
+    plural: plural(pointsToDeduct)
+  });
+  updateScoreDisplay();
+}
+
 function resetProgress() {
   const confirmed = window.confirm(t("resetConfirm"));
 
@@ -3121,6 +3157,7 @@ exportProgressButton.addEventListener("click", exportProgressBackup);
 copyBackupButton.addEventListener("click", copyProgressBackup);
 importProgressButton.addEventListener("click", importProgressBackup);
 addRestorePointsButton.addEventListener("click", addRestorePoints);
+deductPointsButton.addEventListener("click", deductParentPoints);
 addRewardButton.addEventListener("click", saveRewardFromForm);
 cancelRewardEditButton.addEventListener("click", () => {
   clearRewardForm();
