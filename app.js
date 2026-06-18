@@ -299,6 +299,27 @@ const I18N = {
     parentViewEyebrow: "Parent View",
     parentViewTitle: "Detailed Practice Stats",
     parentNote: "Mode-by-mode scores and streaks are kept here so the main screen can stay simple.",
+    backupToolsTitle: "Progress Backup",
+    backupToolsHelp: "Export a backup before updating or moving to a new device. Paste backup text here to restore saved progress.",
+    exportProgress: "Export Progress",
+    copyBackupText: "Copy Backup Text",
+    importProgress: "Import Progress",
+    progressBackupLabel: "Backup Text",
+    progressBackupPlaceholder: "Exported backup text appears here.",
+    backupReady: "Backup ready. Keep this text somewhere safe before updating.",
+    backupCopied: "Backup text copied.",
+    backupCopyFailed: "Backup text is ready. Select it and copy it manually.",
+    backupMissing: "Paste backup text before importing.",
+    backupInvalid: "That backup text could not be read.",
+    backupImportConfirm: "Importing backup text will replace progress saved on this device. Continue?",
+    backupImported: "Progress restored. Reloading now.",
+    backupImportCanceled: "Import canceled.",
+    adjustPointsTitle: "Restore Points",
+    adjustPointsHelp: "If points were lost during an update, add them back here.",
+    adjustPointsLabel: "Points to Add",
+    addRestorePoints: "Add Restore Points",
+    adjustPointsInvalid: "Enter a whole number greater than 0.",
+    adjustPointsSuccess: "{points} point{plural} restored.",
     rewards: "🏆 Rewards",
     rewardBank: "🏆 Rewards",
     earned: "Earned",
@@ -538,6 +559,27 @@ const I18N = {
     parentViewEyebrow: "家长视图",
     parentViewTitle: "详细练习数据",
     parentNote: "每个模式的分数和连续记录放在这里，让主屏幕保持简单。",
+    backupToolsTitle: "进度备份",
+    backupToolsHelp: "更新或换设备前先导出备份。把备份文字粘贴到这里，就可以恢复进度。",
+    exportProgress: "导出进度",
+    copyBackupText: "复制备份文字",
+    importProgress: "导入进度",
+    progressBackupLabel: "备份文字",
+    progressBackupPlaceholder: "导出的备份文字会显示在这里。",
+    backupReady: "备份已准备好。更新前请把这段文字保存好。",
+    backupCopied: "备份文字已复制。",
+    backupCopyFailed: "备份文字已准备好。请手动选中并复制。",
+    backupMissing: "请先粘贴备份文字再导入。",
+    backupInvalid: "无法读取这段备份文字。",
+    backupImportConfirm: "导入备份会替换这台设备上的进度。继续吗？",
+    backupImported: "进度已恢复，正在重新加载。",
+    backupImportCanceled: "已取消导入。",
+    adjustPointsTitle: "恢复积分",
+    adjustPointsHelp: "如果更新后积分丢失，可以在这里加回来。",
+    adjustPointsLabel: "要增加的积分",
+    addRestorePoints: "增加恢复积分",
+    adjustPointsInvalid: "请输入大于 0 的整数。",
+    adjustPointsSuccess: "已恢复 {points} 分。",
     rewards: "🏆 奖励",
     rewardBank: "🏆 奖励",
     earned: "已获得",
@@ -728,6 +770,14 @@ const closeMappingButton = document.getElementById("closeMappingButton");
 const saveProgressButton = document.getElementById("saveProgressButton");
 const resetProgressButton = document.getElementById("resetProgressButton");
 const progressMessage = document.getElementById("progressMessage");
+const exportProgressButton = document.getElementById("exportProgressButton");
+const copyBackupButton = document.getElementById("copyBackupButton");
+const importProgressButton = document.getElementById("importProgressButton");
+const progressBackupText = document.getElementById("progressBackupText");
+const backupMessage = document.getElementById("backupMessage");
+const adjustPointsInput = document.getElementById("adjustPointsInput");
+const addRestorePointsButton = document.getElementById("addRestorePointsButton");
+const adjustPointsMessage = document.getElementById("adjustPointsMessage");
 const todayPoints = document.getElementById("todayPoints");
 const weekPoints = document.getElementById("weekPoints");
 const monthPoints = document.getElementById("monthPoints");
@@ -887,7 +937,7 @@ function setControlLabelText(selector, text) {
     return;
   }
 
-  const control = label.querySelector("input, select");
+  const control = label.querySelector("input, select, textarea");
   label.textContent = `${text} `;
 
   if (control) {
@@ -958,6 +1008,17 @@ function applyStaticTranslations() {
   setText("#parentViewTitle", t("parentViewTitle"));
   closeParentViewButton.textContent = t("backToGame");
   setText(".parent-note", t("parentNote"));
+  setText("#backupToolsTitle", t("backupToolsTitle"));
+  setText("#backupToolsHelp", t("backupToolsHelp"));
+  exportProgressButton.textContent = t("exportProgress");
+  copyBackupButton.textContent = t("copyBackupText");
+  importProgressButton.textContent = t("importProgress");
+  setControlLabelText("label[for='progressBackupText']", t("progressBackupLabel"));
+  progressBackupText.placeholder = t("progressBackupPlaceholder");
+  setText("#adjustPointsTitle", t("adjustPointsTitle"));
+  setText("#adjustPointsHelp", t("adjustPointsHelp"));
+  setControlLabelText("label[for='adjustPointsInput']", t("adjustPointsLabel"));
+  addRestorePointsButton.textContent = t("addRestorePoints");
 
   setText(".rewards .eyebrow", t("rewards"));
   setText(".rewards h2", t("rewardBank"));
@@ -1911,6 +1972,128 @@ function saveProgressSnapshot() {
   }));
 
   progressMessage.textContent = t("progressSaved", { date: formatLongDate(new Date()) });
+}
+
+const BACKUP_STORAGE_KEYS = [
+  "violinAdventureLanguage",
+  "liamLevelStats",
+  "liamPracticeLog",
+  "liamProgressRecords",
+  "liamPracticePointDates",
+  "liamPracticeTotalMinutes",
+  "liamPracticePointsAwarded",
+  "liamSinfoniettaPracticeState",
+  "liamSinfoniettaPracticeHistory",
+  "liamRewardRedemptions",
+  "liamCustomRewards",
+  "liamCustomPracticeSettings",
+  "liamSelectedDifficulty",
+  "liamProgressSnapshot",
+  "liamLastPracticeRun"
+];
+
+function createProgressBackup() {
+  return {
+    app: "Violin Adventure",
+    backupVersion: 1,
+    exportedAt: new Date().toISOString(),
+    storage: Object.fromEntries(BACKUP_STORAGE_KEYS.map((key) => [key, localStorage.getItem(key)]))
+  };
+}
+
+function downloadBackupFile(backupText) {
+  const blob = new Blob([backupText], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `violin-adventure-backup-${localDateKey(new Date())}.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportProgressBackup() {
+  const backupText = JSON.stringify(createProgressBackup(), null, 2);
+  progressBackupText.value = backupText;
+  backupMessage.textContent = t("backupReady");
+  downloadBackupFile(backupText);
+}
+
+async function copyProgressBackup() {
+  if (!progressBackupText.value.trim()) {
+    progressBackupText.value = JSON.stringify(createProgressBackup(), null, 2);
+  }
+
+  progressBackupText.select();
+
+  try {
+    await navigator.clipboard.writeText(progressBackupText.value);
+    backupMessage.textContent = t("backupCopied");
+  } catch (error) {
+    backupMessage.textContent = t("backupCopyFailed");
+  }
+}
+
+function importProgressBackup() {
+  const rawText = progressBackupText.value.trim();
+
+  if (!rawText) {
+    backupMessage.textContent = t("backupMissing");
+    return;
+  }
+
+  let backup;
+
+  try {
+    backup = JSON.parse(rawText);
+  } catch (error) {
+    backupMessage.textContent = t("backupInvalid");
+    return;
+  }
+
+  if (!backup?.storage || typeof backup.storage !== "object") {
+    backupMessage.textContent = t("backupInvalid");
+    return;
+  }
+
+  if (!window.confirm(t("backupImportConfirm"))) {
+    backupMessage.textContent = t("backupImportCanceled");
+    return;
+  }
+
+  BACKUP_STORAGE_KEYS.forEach((key) => {
+    const value = backup.storage[key];
+
+    if (value === null || value === undefined) {
+      localStorage.removeItem(key);
+      return;
+    }
+
+    localStorage.setItem(key, String(value));
+  });
+
+  backupMessage.textContent = t("backupImported");
+  window.setTimeout(() => window.location.reload(), 600);
+}
+
+function addRestorePoints() {
+  const pointsToAdd = Number(adjustPointsInput.value);
+
+  if (!Number.isInteger(pointsToAdd) || pointsToAdd <= 0) {
+    adjustPointsMessage.textContent = t("adjustPointsInvalid");
+    return;
+  }
+
+  practicePointsAwarded += pointsToAdd;
+  savePracticePointsAwarded();
+  recordPointEarned("parent-restore", pointsToAdd);
+  adjustPointsInput.value = "";
+  adjustPointsMessage.textContent = t("adjustPointsSuccess", {
+    points: pointsToAdd,
+    plural: plural(pointsToAdd)
+  });
+  updateScoreDisplay();
 }
 
 function resetProgress() {
@@ -2934,6 +3117,10 @@ newNoteButton.addEventListener("click", pickNewChallenge);
 playNoteButton.addEventListener("click", playCurrentNote);
 saveProgressButton.addEventListener("click", saveProgressSnapshot);
 resetProgressButton.addEventListener("click", resetProgress);
+exportProgressButton.addEventListener("click", exportProgressBackup);
+copyBackupButton.addEventListener("click", copyProgressBackup);
+importProgressButton.addEventListener("click", importProgressBackup);
+addRestorePointsButton.addEventListener("click", addRestorePoints);
 addRewardButton.addEventListener("click", saveRewardFromForm);
 cancelRewardEditButton.addEventListener("click", () => {
   clearRewardForm();

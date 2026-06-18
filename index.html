@@ -11,7 +11,7 @@
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
     <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-    <link rel="stylesheet" href="styles.css?v=18">
+    <link rel="stylesheet" href="styles.css?v=20">
   </head>
   <body>
     <main class="app-shell">
@@ -264,6 +264,32 @@ If you miss a question, you can try once more for learning, but that round will 
             <button id="closeParentViewButton" class="secondary-button" type="button">Back to Game</button>
           </div>
           <p class="parent-note">Mode-by-mode scores and streaks are kept here so the main screen can stay simple.</p>
+          <div class="parent-tools">
+            <section class="parent-tool-card">
+              <h3 id="backupToolsTitle">Progress Backup</h3>
+              <p id="backupToolsHelp">Export a backup before updating or moving to a new device. Paste backup text here to restore saved progress.</p>
+              <div class="parent-tool-actions">
+                <button id="exportProgressButton" class="secondary-button" type="button">Export Progress</button>
+                <button id="copyBackupButton" class="secondary-button" type="button">Copy Backup Text</button>
+                <button id="importProgressButton" type="button">Import Progress</button>
+              </div>
+              <label for="progressBackupText" id="progressBackupLabel">
+                Backup Text
+                <textarea id="progressBackupText" rows="6" spellcheck="false" placeholder="Exported backup text appears here."></textarea>
+              </label>
+              <p id="backupMessage" class="parent-tool-message" aria-live="polite"></p>
+            </section>
+            <section class="parent-tool-card">
+              <h3 id="adjustPointsTitle">Restore Points</h3>
+              <p id="adjustPointsHelp">If points were lost during an update, add them back here.</p>
+              <label for="adjustPointsInput" id="adjustPointsLabel">
+                Points to Add
+                <input id="adjustPointsInput" type="number" min="1" inputmode="numeric" placeholder="10">
+              </label>
+              <button id="addRestorePointsButton" type="button">Add Restore Points</button>
+              <p id="adjustPointsMessage" class="parent-tool-message" aria-live="polite"></p>
+            </section>
+          </div>
           <div id="levelScoreGrid" class="level-score-grid" aria-label="Score and streak by mode"></div>
         </div>
       </div>
@@ -320,6 +346,6 @@ If you miss a question, you can try once more for learning, but that round will 
       </section>
     </main>
 
-    <script src="app.js?v=18"></script>
+    <script src="app.js?v=20"></script>
   </body>
 </html>

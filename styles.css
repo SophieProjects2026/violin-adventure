@@ -783,6 +783,63 @@ button:active {
   font-weight: 800;
 }
 
+.parent-tools {
+  display: grid;
+  grid-template-columns: 1.4fr 0.9fr;
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.parent-tool-card {
+  border: 3px solid rgba(38, 50, 74, 0.1);
+  border-radius: 8px;
+  padding: 16px;
+  background: #fff8df;
+}
+
+.parent-tool-card h3 {
+  margin: 0 0 8px;
+}
+
+.parent-tool-card p {
+  color: #47516a;
+  font-weight: 800;
+}
+
+.parent-tool-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.parent-tool-actions button,
+.parent-tool-card button {
+  min-height: 54px;
+  padding: 10px 14px;
+  font-size: 1rem;
+}
+
+textarea {
+  width: 100%;
+  min-height: 150px;
+  border: 3px solid #d8e0ea;
+  border-radius: 8px;
+  padding: 12px;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 800;
+  resize: vertical;
+}
+
+.parent-tool-message {
+  min-height: 1.4em;
+  margin: 10px 0 0;
+  color: var(--violet);
+  font-weight: 900;
+}
+
 .level-score-card {
   min-height: 92px;
   border-radius: 8px;
@@ -1408,6 +1465,7 @@ button:disabled {
   .current-context,
   .period-points,
   .practice-record-layout,
+  .parent-tools,
   .record-grid,
   .mapping-grid,
   .reward-list {
