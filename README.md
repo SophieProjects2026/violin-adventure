@@ -85,7 +85,7 @@ The app separates training mode from difficulty level. Training mode controls th
 
 The selected difficulty is stored in `localStorage` under `liamSelectedDifficulty` and applies to all training and practice modes.
 
-Practice Mode also uses the same mapping table. It generates 10 notes, shows them in a row on the staff, and asks for each violin location in order. Accuracy is based on first-try correctness for each note; a note counts as missed if the student taps any wrong location before finding the right one.
+Practice Mode also uses the same mapping table. It generates 20 questions, shows the notes on the staff, and asks for each violin location in order. Accuracy is based on first-try correctness for each note; a note counts as missed if the student taps any wrong location before finding the right one.
 
 The main screen is designed for a child student and shows the current mode, difficulty, points, practice status, rewards, and weekly/monthly/yearly progress. Detailed mode-by-mode scores and streaks are hidden by default in the Parent View.
 
@@ -93,7 +93,7 @@ Training and practice choices use compact dropdown selectors to keep the top of 
 
 ## Suzuki Book Modes
 
-The app includes focused Book Practice 10-note runs for Suzuki Book 1, Suzuki Book 2, and Suzuki Book 3:
+The app includes focused Book Practice 20-question runs for Suzuki Book 1, Suzuki Book 2, and Suzuki Book 3:
 
 - Book 1 Mode currently uses D, A, and E string notes from the beginner table.
 - Book 2 Mode currently uses the full beginner table, including G string notes.
@@ -119,13 +119,15 @@ Checkpoint 3 adds local progress records. Earned points are stored in `localStor
 
 ## Point System
 
-Game and practice modes use 10-question rounds. A round earns 1 point only when all 10 questions are answered correctly on the first try. If the student misses a question, the app gives one encouraging second try for learning, but that round no longer counts as perfect.
+Game and practice modes use 20-question rounds. A round earns 1 point only when all 20 questions are answered correctly on the first try. If the student misses a question, the app shows the correct answer and gives one encouraging second try for learning, but that round becomes Learning Mode and no longer earns a game point.
 
-Real violin practice also earns points. Every full 15 minutes of accumulated practice earns 1 point, even across multiple practice sessions. Accumulated practice minutes are stored in `localStorage` under `liamPracticeTotalMinutes`, and awarded practice points are stored under `liamPracticePointsAwarded`. Older once-per-day practice data is preserved and used as a starting point when those newer values do not exist yet.
+Daily Sinfonietta Practice also earns points. Completing all 7 Daily Sinfonietta Practice tasks earns 2 points each day. The bonus is awarded only once per calendar day, even if items are unchecked and rechecked.
+
+After Daily Sinfonietta Practice is complete, extra violin practice earns 1 bonus point for every additional 15 minutes entered in the Extra Practice Minutes field. Extra minutes and awarded extra-practice points are stored in the daily Sinfonietta state and history so refreshes do not duplicate point awards.
 
 ## Reward Bank
 
-The reward area is a flexible family reward bank. Total earned points come from perfect 10-question rounds and accumulated real-practice points. Total redeemed points come from parent or child reward redemptions. Remaining points are calculated as:
+The reward area is a flexible family reward bank. Total earned points come from perfect 20-question rounds, Daily Sinfonietta Practice completion bonuses, and extra-practice minute bonuses. Total redeemed points come from parent or child reward redemptions. Remaining points are calculated as:
 
 `remaining points = total earned points - total redeemed points`
 

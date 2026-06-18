@@ -113,7 +113,7 @@ const MODES = [
     shortTitle: "Practice",
     group: "practice",
     poolLabel: "All Notes",
-    instructions: "Play 10 staff notes in order, then see accuracy, time, and missed notes.",
+    instructions: "Play 20 staff notes in order, then see accuracy, time, and missed notes.",
     answerType: "practice",
     promptType: "practice"
   },
@@ -123,7 +123,7 @@ const MODES = [
     shortTitle: "Book 1",
     group: "book",
     poolLabel: "Book 1 Practice Pool",
-    instructions: "Practice 10 notes from the current Book 1 pool, then see accuracy, time, and misses.",
+    instructions: "Practice 20 notes from the current Book 1 pool, then see accuracy, time, and misses.",
     answerType: "practice",
     promptType: "practice",
     notePool: "book1"
@@ -134,7 +134,7 @@ const MODES = [
     shortTitle: "Book 2",
     group: "book",
     poolLabel: "Book 2 Practice Pool",
-    instructions: "Practice 10 notes from the full beginner Book 1 and 2 pool.",
+    instructions: "Practice 20 notes from the full beginner Book 1 and 2 pool.",
     answerType: "practice",
     promptType: "practice",
     notePool: "book2"
@@ -145,7 +145,7 @@ const MODES = [
     shortTitle: "Book 3",
     group: "book",
     poolLabel: "Book 3 Practice Pool",
-    instructions: "Practice 10 notes from the current Book 3 prototype pool.",
+    instructions: "Practice 20 notes from the current Book 3 prototype pool.",
     answerType: "practice",
     promptType: "practice",
     notePool: "book3"
@@ -156,7 +156,7 @@ const MODES = [
     shortTitle: "Custom",
     group: "practice",
     poolLabel: "Custom Practice Pool",
-    instructions: "Choose strings, use the selected difficulty, then play a 10-note custom run.",
+    instructions: "Choose strings, use the selected difficulty, then play a 20-question custom run.",
     answerType: "practice",
     promptType: "practice",
     notePool: "custom"
@@ -172,13 +172,14 @@ const DIFFICULTIES = [
 ];
 
 const STRINGS = ["E", "A", "D", "G"];
+const QUESTIONS_PER_ROUND = 20;
 const STAFF_TOP_Y = 62;
 const STAFF_BOTTOM_Y = 142;
 const STAFF_LINE_SPACING = 20;
 const STAFF_STEP = STAFF_LINE_SPACING / 2;
 const LEDGER_EXTENSION = 27;
-const NOTE_HEAD_RX = 18.5;
-const NOTE_HEAD_RY = 7.4;
+const NOTE_HEAD_RX = 20.2;
+const NOTE_HEAD_RY = 8.1;
 const FINGERS = [
   { value: 0, label: "Open", longLabel: "open string" },
   { value: 1, label: "1", longLabel: "first finger" },
@@ -196,6 +197,25 @@ const REWARD_SUGGESTIONS = [
   "New violin accessory",
   "Family adventure"
 ];
+const SINFONIETTA_SCALES = [
+  "C Major",
+  "G Major",
+  "D Major",
+  "A Major",
+  "F Major",
+  "B♭ Major",
+  "G Melodic Minor",
+  "D Melodic Minor"
+];
+const SINFONIETTA_ITEMS = [
+  { id: "openStrings", titleKey: "openStringPractice", descriptionKey: "openStringDescription" },
+  { id: "scale1", titleKey: "scalePractice1", type: "scale" },
+  { id: "scale2", titleKey: "scalePractice2", type: "scale" },
+  { id: "sightReadingMusic", titleKey: "sightReadingMusic", goalKey: "sightReadingMusicGoal" },
+  { id: "sightReadingSongs", titleKey: "sightReadingSongs", goalKey: "sightReadingSongsGoal" },
+  { id: "repertoire", titleKey: "repertoire", goalKey: "repertoireGoal", textKey: "repertoireText", textPlaceholderKey: "repertoirePlaceholder" },
+  { id: "favoriteSongs", titleKey: "favoriteSongs", goalKey: "favoriteSongsGoal", textKey: "favoriteSongsText", textPlaceholderKey: "favoriteSongsPlaceholder" }
+];
 
 const I18N = {
   en: {
@@ -204,13 +224,43 @@ const I18N = {
     rewardStatus: "Reward Status",
     parentView: "Parent View",
     totalPoints: "Total Points",
-    pointRules: "You earn 1 point when you complete 10 questions perfectly on the first try. If you miss a question, you can try once more for learning, but that round will not earn a point. You also earn 1 point for every 15 minutes of real violin practice.",
+    pointRules: "⭐ You earn 1 point when you complete 20 questions perfectly on the first try.\n\nIf you miss a question, you can try once more for learning, but that round will not earn a point.\n\n⭐ Complete all Daily Sinfonietta Practice tasks to earn 2 points each day.\n\n⭐ Every extra 15 minutes of violin practice earns 1 bonus point.",
     readyPractice: "Ready for today's practice? 🎻",
+    sinfoniettaEyebrow: "Daily Orchestra Habit",
+    sinfoniettaTitle: "Sinfonietta Practice",
+    sinfoniettaIntro: "Build tone, scales, sight reading, repertoire, and fun playing every day.",
+    pickScales: "🎲 Pick Today's Scales",
+    completed: "Completed",
+    dailyPracticeProgress: "Daily Practice Progress: {count} / {total} completed",
+    sinfoniettaComplete: "🎉 Great Job!\n🎻 Daily Sinfonietta Practice Complete!\n⭐ +2 Bonus Practice Points",
+    sinfoniettaCompleteSaved: "🎉 Great Job!\n🎻 Daily Sinfonietta Practice Complete!\n⭐ Bonus Practice Points already earned today",
+    extraPracticeTitle: "⭐ Extra Practice Time",
+    extraPracticeHelp: "After Daily Sinfonietta Practice is complete, every extra 15 minutes earns 1 bonus point.",
+    extraPracticeMinutes: "Extra Practice Minutes",
+    addExtraPractice: "+15 minutes",
+    extraPracticeBonus: "Bonus Points Earned: {points}",
+    extraPracticeLocked: "Complete Daily Sinfonietta Practice first to unlock extra practice bonus points.",
+    openStringPractice: "Open String Practice",
+    openStringDescription: "Long bows • Beautiful tone • Straight bow • G, D, A, E strings",
+    scalePractice1: "Scale Practice #1",
+    scalePractice2: "Scale Practice #2",
+    sightReadingMusic: "Sight Reading - I Can Read Music",
+    sightReadingMusicGoal: "Read 1 page from I Can Read Music",
+    sightReadingSongs: "Sight Reading - Popular Songs",
+    sightReadingSongsGoal: "Play 1 song from the Popular Songs book",
+    repertoire: "Repertoire",
+    repertoireGoal: "Practice Suzuki piece and/or Orchestra music",
+    repertoireText: "Today I practiced:",
+    repertoirePlaceholder: "Suzuki piece, orchestra music...",
+    favoriteSongs: "My Favorite Songs",
+    favoriteSongsGoal: "Play any song or songs you enjoy",
+    favoriteSongsText: "Today I played:",
+    favoriteSongsPlaceholder: "Favorite song names...",
     today: "Today",
     thisWeek: "This Week",
     thisMonth: "This Month",
     thisYear: "This Year",
-    training: "Training",
+    training: "🎯 Training",
     trainingMode: "Training Mode",
     practiceMode: "Practice Mode",
     difficultyLevel: "Difficulty Level",
@@ -218,7 +268,7 @@ const I18N = {
     difficulty: "Difficulty",
     notePool: "Note Pool",
     customPractice: "Custom Practice",
-    customPracticeHelp: "Choose strings for the next 10-note run. The global difficulty level still applies.",
+    customPracticeHelp: "Choose strings for the next 20-question run. The global difficulty level still applies.",
     strings: "Strings",
     stringHeading: "String",
     open: "Open",
@@ -235,10 +285,10 @@ const I18N = {
     mapButton: "How Notes Map to the Violin",
     tapAnswer: "Tap the answer.",
     practice: "Practice",
-    practiceRecordTitle: "Practice Check-In & Record",
+    practiceRecordTitle: "🎻 Daily Practice",
     saveProgress: "Save Progress",
     resetProgress: "Reset Progress",
-    dailyPracticeCheckIn: "Daily Practice Check-In",
+    dailyPracticeCheckIn: "Daily Extra Practice Check-In",
     minutesPracticed: "Minutes practiced",
     practicedToday: "I practiced today",
     weeklyRecord: "Weekly Record",
@@ -249,8 +299,8 @@ const I18N = {
     parentViewEyebrow: "Parent View",
     parentViewTitle: "Detailed Practice Stats",
     parentNote: "Mode-by-mode scores and streaks are kept here so the main screen can stay simple.",
-    rewards: "Rewards",
-    rewardBank: "Reward Bank",
+    rewards: "🏆 Rewards",
+    rewardBank: "🏆 Rewards",
     earned: "Earned",
     redeemed: "Redeemed",
     available: "Available",
@@ -301,9 +351,7 @@ const I18N = {
     deleteRewardConfirm: "Delete \"{reward}\" from your rewards?",
     greatPractice: "Great job! You practiced {minutes} minutes today.",
     enterPracticeMinutes: "Enter your practice minutes first.",
-    practicePointEarned: "Practice point earned!",
-    practicePointsEarned: "{points} practice points earned!",
-    practiceSavedNext: "Practice saved. {minutes} more minute{plural} to the next practice point.",
+    practiceMinutesSaved: "Practice minutes saved.",
     progressSaved: "Progress saved on {date}.",
     resetConfirm: "Reset all saved progress? Scores, streaks, practice records, and point history will be cleared.",
     resetCanceled: "Reset canceled.",
@@ -336,11 +384,11 @@ const I18N = {
       level3: "Read the staff note, then tap open, 1st, 2nd, 3rd, or 4th finger.",
       level4: "Listen carefully, then tap the violin location.",
       level5: "Read the melody, then tap each string and finger in order.",
-      practice: "Play 10 staff notes in order, then see accuracy, time, and missed notes.",
-      book1: "Practice 10 notes from the current Book 1 pool, then see accuracy, time, and misses.",
-      book2: "Practice 10 notes from the full beginner Book 1 and 2 pool.",
-      book3: "Practice 10 notes from the current Book 3 prototype pool.",
-      custom: "Choose strings, use the selected difficulty, then play a 10-note custom run."
+      practice: "Play 20 staff notes in order, then see accuracy, time, and missed notes.",
+      book1: "Practice 20 notes from the current Book 1 pool, then see accuracy, time, and misses.",
+      book2: "Practice 20 notes from the full beginner Book 1 and 2 pool.",
+      book3: "Practice 20 notes from the current Book 3 prototype pool.",
+      custom: "Choose strings, use the selected difficulty, then play a 20-question custom run."
     },
     poolLabels: {
       all: "All Notes",
@@ -366,27 +414,28 @@ const I18N = {
     higherDifficultyBook: "Try a higher difficulty level for this book practice.",
     noNotesSettings: "No notes match these settings. Try a higher difficulty level or choose more strings.",
     perfectSoFar: "Perfect first tries so far.",
-    learningRound: "Learning round: finish strong.",
-    learningTryAgain: "Learning round: try one more time.",
-    learningShort: "Learning round.",
-    questionStatus: "Question {current} of {total}. {status}",
-    audioQuestionStatus: "Question {current} of 10. Listen, then choose the location. {status}",
-    melodyStatus: "Melody note {current} of {total}. {status}",
-    melodyQuestionStatus: "Melody {current} of {total}. {status}",
-    practiceStatus: "Practice note {current} of {total}. {status}",
+    learningRound: "Learning Mode: finish strong.",
+    learningTryAgain: "Learning Mode: try one more time.",
+    learningShort: "Learning Mode.",
+    questionStatus: "Question {current} / {total}. {status}",
+    audioQuestionStatus: "Question {current} / {total}. Listen, then choose the location. {status}",
+    melodyStatus: "Melody note {current} / {total}. {status}",
+    melodyQuestionStatus: "Melody {current} / {total}. {status}",
+    practiceStatus: "Practice note {current} / {total}. {status}",
     correct: "Correct!",
     secondTryCorrect: "Good job! You found it.",
-    goodTryAgain: "Good try! Want to try one more time?",
+    goodTryAgain: "Good try! The correct answer is {answer}. Try it once more for learning.",
     correctAnswerIs: "Good try! The correct answer is {answer}",
-    perfectTen: "Perfect 10! You earned 1 point.",
-    roundCompletePerfect: "Round complete: 10 correct in a row.",
-    roundCompleteLearning: "Round complete. Nice learning round! A point needs 10 first-try answers.",
-    roundCompleteTry: "Round complete: try for 10 first-try answers next time.",
+    perfectRound: "🎉 Perfect!\n{total} / {total} correct on the first try.\n⭐ You earned 1 point!",
+    effortRound: "Good effort! You got {correct} / {total}. Try again for a perfect round to earn 1 point.",
+    learningRoundComplete: "👏 Nice work!\nYou completed the round and learned from your mistakes.\n\n⭐ Points are earned only for 20 correct answers on the first try.\n\nKeep practicing and try for a perfect round next time!",
+    roundCompletePerfect: "🎉 Perfect! {total} / {total}",
+    roundCompleteTry: "Try again for a perfect round to earn 1 point.",
     melodyComplete: "Melody complete!",
     practiceComplete: "Practice complete!",
-    practiceRoundLearning: "Practice round complete. A point needs 10 first-try answers.",
+    practiceRoundLearning: "Practice round complete. A point needs 20 first-try answers.",
     tapFirstNote: "Tap the first note location.",
-    tapNotePerfect: "Tap note 1 of 10. Perfect first tries so far.",
+    tapNotePerfect: "Tap note 1 of 20. Perfect first tries so far.",
     tapReplay: "Tap Replay Note to hear it again.",
     nowTapBoard: "Now tap the matching string and finger on the violin board.",
     locationLabel: "{note} = {string}, {finger}",
@@ -414,13 +463,43 @@ const I18N = {
     rewardStatus: "奖励状态",
     parentView: "家长视图",
     totalPoints: "总积分",
-    pointRules: "连续 10 题第一次就答对，可以得 1 分。如果答错一题，可以再试一次来学习，但这一轮不加分。真实练琴每满 15 分钟，也可以得 1 分。",
+    pointRules: "⭐ 连续 20 题第一次就答对，可以得 1 分。\n\n如果答错一题，可以再试一次来学习，但这一轮不加分。\n\n⭐ 完成所有每日 Sinfonietta 练习任务，每天可获得 2 分。\n\n⭐ 每额外练琴 15 分钟，可获得 1 个奖励积分。",
     readyPractice: "准备好今天练琴了吗？🎻",
+    sinfoniettaEyebrow: "每日乐团习惯",
+    sinfoniettaTitle: "Sinfonietta 练习",
+    sinfoniettaIntro: "每天练音色、音阶、视奏、曲目，还有喜欢的歌。",
+    pickScales: "🎲 随机选择今天的音阶",
+    completed: "完成",
+    dailyPracticeProgress: "每日练习进度：{count} / {total} 完成",
+    sinfoniettaComplete: "🎉 做得真棒！\n🎻 今日 Sinfonietta 练习完成！\n⭐ +2 个奖励练习积分",
+    sinfoniettaCompleteSaved: "🎉 做得真棒！\n🎻 今日 Sinfonietta 练习完成！\n⭐ 今天已经获得奖励练习积分",
+    extraPracticeTitle: "⭐ 额外练琴时间",
+    extraPracticeHelp: "完成每日 Sinfonietta 练习后，每额外练琴 15 分钟可获得 1 个奖励积分。",
+    extraPracticeMinutes: "额外练琴分钟数",
+    addExtraPractice: "+15 分钟",
+    extraPracticeBonus: "已获得奖励积分：{points}",
+    extraPracticeLocked: "先完成每日 Sinfonietta 练习，就可以获得额外练琴奖励积分。",
+    openStringPractice: "空弦练习",
+    openStringDescription: "长弓 • 好听的音色 • 直直的弓 • G、D、A、E 弦",
+    scalePractice1: "音阶练习 #1",
+    scalePractice2: "音阶练习 #2",
+    sightReadingMusic: "视奏 - I Can Read Music",
+    sightReadingMusicGoal: "读 I Can Read Music 里的 1 页",
+    sightReadingSongs: "视奏 - Popular Songs",
+    sightReadingSongsGoal: "拉 Popular Songs 书里的 1 首歌",
+    repertoire: "曲目练习",
+    repertoireGoal: "练 Suzuki 曲子和/或乐团音乐",
+    repertoireText: "今天我练了：",
+    repertoirePlaceholder: "Suzuki 曲子、乐团音乐...",
+    favoriteSongs: "我喜欢的歌",
+    favoriteSongsGoal: "拉你喜欢的任何歌曲",
+    favoriteSongsText: "今天我拉了：",
+    favoriteSongsPlaceholder: "喜欢的歌名...",
     today: "今天",
     thisWeek: "本周",
     thisMonth: "本月",
     thisYear: "今年",
-    training: "训练",
+    training: "🎯 训练",
     trainingMode: "训练模式",
     practiceMode: "练习模式",
     difficultyLevel: "难度等级",
@@ -428,7 +507,7 @@ const I18N = {
     difficulty: "难度",
     notePool: "音符范围",
     customPractice: "自定义练习",
-    customPracticeHelp: "选择这次 10 题练习要包含的弦。当前难度仍然会生效。",
+    customPracticeHelp: "选择这次 20 题练习要包含的弦。当前难度仍然会生效。",
     strings: "弦",
     stringHeading: "弦",
     open: "空弦",
@@ -445,10 +524,10 @@ const I18N = {
     mapButton: "音符怎样对应小提琴",
     tapAnswer: "点一个答案。",
     practice: "练习",
-    practiceRecordTitle: "练琴打卡和记录",
+    practiceRecordTitle: "🎻 每日练习",
     saveProgress: "保存进度",
     resetProgress: "重置进度",
-    dailyPracticeCheckIn: "练琴打卡",
+    dailyPracticeCheckIn: "每日额外练琴打卡",
     minutesPracticed: "练琴分钟数",
     practicedToday: "我今天练琴了",
     weeklyRecord: "本周记录",
@@ -459,8 +538,8 @@ const I18N = {
     parentViewEyebrow: "家长视图",
     parentViewTitle: "详细练习数据",
     parentNote: "每个模式的分数和连续记录放在这里，让主屏幕保持简单。",
-    rewards: "奖励",
-    rewardBank: "奖励银行",
+    rewards: "🏆 奖励",
+    rewardBank: "🏆 奖励",
     earned: "已获得",
     redeemed: "已兑换",
     available: "可用",
@@ -511,9 +590,7 @@ const I18N = {
     deleteRewardConfirm: "要删除“{reward}”这个奖励吗？",
     greatPractice: "做得真棒！今天已经练了 {minutes} 分钟。",
     enterPracticeMinutes: "请先输入练琴分钟数。",
-    practicePointEarned: "获得 1 个练琴积分！",
-    practicePointsEarned: "获得 {points} 个练琴积分！",
-    practiceSavedNext: "练琴已保存。还差 {minutes} 分钟可以获得下一个练琴积分。",
+    practiceMinutesSaved: "练琴分钟数已保存。",
     progressSaved: "进度已保存：{date}。",
     resetConfirm: "要重置所有进度吗？分数、连续记录、练琴记录和积分历史都会清除。",
     resetCanceled: "已取消重置。",
@@ -546,11 +623,11 @@ const I18N = {
       level3: "看五线谱上的音，然后点空弦、1指、2指、3指或4指。",
       level4: "仔细听，然后点小提琴上的位置。",
       level5: "看旋律，然后按顺序点每个弦和手指位置。",
-      practice: "按顺序完成 10 个五线谱音符，然后查看正确率、时间和错过的音。",
-      book1: "练习当前第一册音符范围里的 10 个音。",
+      practice: "按顺序完成 20 个五线谱音符，然后查看正确率、时间和错过的音。",
+      book1: "练习当前第一册音符范围里的 20 个音。",
       book2: "练习第一册和第二册的初级音符范围。",
       book3: "练习当前第三册原型音符范围。",
-      custom: "选择弦和难度，然后完成 10 题自定义练习。"
+      custom: "选择弦和难度，然后完成 20 题自定义练习。"
     },
     poolLabels: {
       all: "全部音符",
@@ -576,27 +653,28 @@ const I18N = {
     higherDifficultyBook: "这个册别可以试试更高难度。",
     noNotesSettings: "这些设置下没有音符。可以提高难度或选择更多弦。",
     perfectSoFar: "目前都是第一次答对。",
-    learningRound: "学习轮：继续加油。",
-    learningTryAgain: "学习轮：再试一次吧。",
-    learningShort: "学习中。",
+    learningRound: "学习模式：继续加油。",
+    learningTryAgain: "学习模式：再试一次吧。",
+    learningShort: "学习模式。",
     questionStatus: "第 {current}/{total} 题。{status}",
-    audioQuestionStatus: "第 {current}/10 题。仔细听，然后找位置。{status}",
+    audioQuestionStatus: "第 {current}/{total} 题。仔细听，然后找位置。{status}",
     melodyStatus: "旋律第 {current}/{total} 个音。{status}",
     melodyQuestionStatus: "第 {current}/{total} 条旋律。{status}",
     practiceStatus: "练习第 {current}/{total} 个音。{status}",
     correct: "答对了！",
     secondTryCorrect: "做得真棒！你找到了。",
-    goodTryAgain: "试得很好！再试一次吧！",
+    goodTryAgain: "试得很好！正确答案是 {answer}。再试一次来学习吧！",
     correctAnswerIs: "试得很好！正确答案是 {answer}",
-    perfectTen: "完美 10 题！你获得 1 分。",
-    roundCompletePerfect: "本轮完成：10 题都第一次答对。",
-    roundCompleteLearning: "本轮完成。很棒的学习轮！要得分需要 10 题都第一次答对。",
-    roundCompleteTry: "本轮完成：下次试试 10 题第一次答对。",
+    perfectRound: "🎉 完美！\n{total} / {total} 题都第一次答对。\n⭐ 你获得 1 分！",
+    effortRound: "很努力！你答对了 {correct} / {total}。再试一次，完美完成一轮就能得 1 分。",
+    learningRoundComplete: "👏 做得很好！\n你完成了这一轮，也从错误中学习了。\n\n⭐ 只有 20 题都第一次答对，才可以得分。\n\n继续练习，下次挑战完美一轮！",
+    roundCompletePerfect: "🎉 完美！{total} / {total}",
+    roundCompleteTry: "再试一次，完美完成一轮就能得 1 分。",
     melodyComplete: "旋律完成！",
     practiceComplete: "练习完成！",
-    practiceRoundLearning: "练习完成。要得分需要 10 题都第一次答对。",
+    practiceRoundLearning: "练习完成。要得分需要 20 题都第一次答对。",
     tapFirstNote: "点第一个音的位置。",
-    tapNotePerfect: "点第 1/10 个音。目前都是第一次答对。",
+    tapNotePerfect: "点第 1/20 个音。目前都是第一次答对。",
     tapReplay: "点“再听一次”可以再听。",
     nowTapBoard: "现在点小提琴指板上对应的弦和手指。",
     locationLabel: "{note} = {string}，{finger}",
@@ -690,6 +768,15 @@ const gameFeedback = document.getElementById("gameFeedback");
 const earViolinCue = document.getElementById("earViolinCue");
 const englishButton = document.getElementById("englishButton");
 const chineseButton = document.getElementById("chineseButton");
+const sinfoniettaSection = document.getElementById("sinfoniettaSection");
+const pickScalesButton = document.getElementById("pickScalesButton");
+const sinfoniettaProgressText = document.getElementById("sinfoniettaProgressText");
+const sinfoniettaProgressFill = document.getElementById("sinfoniettaProgressFill");
+const sinfoniettaChecklist = document.getElementById("sinfoniettaChecklist");
+const sinfoniettaMessage = document.getElementById("sinfoniettaMessage");
+const extraPracticeMinutesInput = minutesInput;
+const addExtraPracticeButton = document.getElementById("addExtraPracticeButton");
+const extraPracticeBonusText = document.getElementById("extraPracticeBonusText");
 
 let currentLanguage = loadSelectedLanguage();
 let activeMode = MODES[0];
@@ -707,6 +794,8 @@ let practiceTotalMinutes = loadPracticeTotalMinutes();
 let practicePointsAwarded = loadPracticePointsAwarded();
 let redemptionRecords = loadRedemptionRecords();
 let customRewards = loadCustomRewards();
+let sinfoniettaHistory = loadSinfoniettaHistory();
+let sinfoniettaState = loadSinfoniettaState();
 let editingRewardId = null;
 let lastPromptNote = null;
 let roundState = createRoundState();
@@ -819,6 +908,13 @@ function applyStaticTranslations() {
   setText(".point-rules", t("pointRules"));
   setAllText(".period-points span", [t("today"), t("thisWeek"), t("thisMonth"), t("thisYear")]);
 
+  setText(".sinfonietta-panel .eyebrow", t("sinfoniettaEyebrow"));
+  setText(".sinfonietta-panel h2", t("sinfoniettaTitle"));
+  setText(".sinfonietta-intro", t("sinfoniettaIntro"));
+  pickScalesButton.textContent = t("pickScales");
+  setText(".extra-practice-help", t("extraPracticeHelp"));
+  addExtraPracticeButton.textContent = t("addExtraPractice");
+
   setText(".game-header .eyebrow", t("training"));
   mappingButton.textContent = t("mapButton");
   newNoteButton.textContent = t("newChallenge");
@@ -915,10 +1011,16 @@ function createEmptyPracticeRun() {
 
 function createRoundState() {
   return {
-    total: 10,
+    total: QUESTIONS_PER_ROUND,
     answered: 0,
+    firstTryCorrect: 0,
+    missedQuestions: 0,
     missed: false,
-    complete: false
+    complete: false,
+    attempts: 0,
+    revealing: false,
+    questionPerfect: true,
+    pointAwarded: false
   };
 }
 
@@ -1057,11 +1159,144 @@ function loadPracticePointsAwarded() {
     return Number(saved) || 0;
   }
 
-  return Math.max(practicePointDates.length, Math.floor(practiceTotalMinutes / 15));
+  return 0;
 }
 
 function savePracticePointsAwarded() {
   localStorage.setItem("liamPracticePointsAwarded", String(practicePointsAwarded));
+}
+
+function createDefaultSinfoniettaState(dateKey = localDateKey(new Date())) {
+  return {
+    date: dateKey,
+    completed: Object.fromEntries(SINFONIETTA_ITEMS.map((item) => [item.id, false])),
+    scales: {
+      scale1: SINFONIETTA_SCALES[0],
+      scale2: SINFONIETTA_SCALES[1]
+    },
+    notes: {
+      repertoire: "",
+      favoriteSongs: ""
+    },
+    bonusAwarded: false,
+    bonusAwardedAt: "",
+    extraPracticeMinutes: 0,
+    extraPracticePointsAwarded: 0,
+    updatedAt: new Date().toISOString()
+  };
+}
+
+function normalizeSinfoniettaState(state) {
+  const normalized = createDefaultSinfoniettaState(state?.date || localDateKey(new Date()));
+  SINFONIETTA_ITEMS.forEach((item) => {
+    normalized.completed[item.id] = Boolean(state?.completed?.[item.id]);
+  });
+  normalized.scales.scale1 = SINFONIETTA_SCALES.includes(state?.scales?.scale1) ? state.scales.scale1 : SINFONIETTA_SCALES[0];
+  normalized.scales.scale2 = SINFONIETTA_SCALES.includes(state?.scales?.scale2) ? state.scales.scale2 : SINFONIETTA_SCALES[1];
+  normalized.notes.repertoire = state?.notes?.repertoire || "";
+  normalized.notes.favoriteSongs = state?.notes?.favoriteSongs || "";
+  normalized.bonusAwarded = Boolean(state?.bonusAwarded);
+  normalized.bonusAwardedAt = state?.bonusAwardedAt || "";
+  normalized.extraPracticeMinutes = Math.max(0, Number(state?.extraPracticeMinutes || 0));
+  normalized.extraPracticePointsAwarded = Math.max(0, Number(state?.extraPracticePointsAwarded || 0));
+  normalized.updatedAt = state?.updatedAt || new Date().toISOString();
+  return normalized;
+}
+
+function loadSinfoniettaHistory() {
+  return JSON.parse(localStorage.getItem("liamSinfoniettaPracticeHistory") || "{}");
+}
+
+function saveSinfoniettaHistory() {
+  localStorage.setItem("liamSinfoniettaPracticeHistory", JSON.stringify(sinfoniettaHistory));
+}
+
+function loadSinfoniettaState() {
+  const saved = normalizeSinfoniettaState(JSON.parse(localStorage.getItem("liamSinfoniettaPracticeState") || "null"));
+  const today = localDateKey(new Date());
+  return saved.date === today ? saved : createDefaultSinfoniettaState(today);
+}
+
+function getSinfoniettaCompletedCount() {
+  return SINFONIETTA_ITEMS.filter((item) => sinfoniettaState.completed[item.id]).length;
+}
+
+function saveSinfoniettaState() {
+  sinfoniettaState.updatedAt = new Date().toISOString();
+  localStorage.setItem("liamSinfoniettaPracticeState", JSON.stringify(sinfoniettaState));
+  sinfoniettaHistory[sinfoniettaState.date] = {
+    ...sinfoniettaState,
+    completedCount: getSinfoniettaCompletedCount(),
+    totalCount: SINFONIETTA_ITEMS.length
+  };
+  saveSinfoniettaHistory();
+}
+
+function ensureSinfoniettaToday() {
+  const today = localDateKey(new Date());
+
+  if (sinfoniettaState.date !== today) {
+    sinfoniettaState = createDefaultSinfoniettaState(today);
+    saveSinfoniettaState();
+  }
+}
+
+function awardSinfoniettaBonusIfReady() {
+  if (getSinfoniettaCompletedCount() !== SINFONIETTA_ITEMS.length || sinfoniettaState.bonusAwarded) {
+    return false;
+  }
+
+  sinfoniettaState.bonusAwarded = true;
+  sinfoniettaState.bonusAwardedAt = new Date().toISOString();
+  practicePointsAwarded += 2;
+  savePracticePointsAwarded();
+  recordPointEarned("sinfonietta-bonus", 2);
+  updateScoreDisplay();
+  return true;
+}
+
+function calculateExtraPracticePoints() {
+  if (!sinfoniettaState.bonusAwarded) {
+    return 0;
+  }
+
+  return Math.floor(Math.max(0, Number(sinfoniettaState.extraPracticeMinutes || 0)) / 15);
+}
+
+function reconcileExtraPracticeBonus() {
+  const targetPoints = calculateExtraPracticePoints();
+  const alreadyAwarded = Number(sinfoniettaState.extraPracticePointsAwarded || 0);
+  const delta = targetPoints - alreadyAwarded;
+
+  if (!delta) {
+    return 0;
+  }
+
+  sinfoniettaState.extraPracticePointsAwarded = targetPoints;
+  practicePointsAwarded += delta;
+  savePracticePointsAwarded();
+  recordPointEarned("extra-practice-bonus", delta);
+  updateScoreDisplay();
+  return delta;
+}
+
+function updateExtraPracticeDisplay() {
+  extraPracticeMinutesInput.value = String(Math.max(0, Number(sinfoniettaState.extraPracticeMinutes || 0)));
+  const earnedPoints = Number(sinfoniettaState.extraPracticePointsAwarded || 0);
+  extraPracticeBonusText.textContent = t("extraPracticeBonus", { points: earnedPoints });
+  extraPracticeBonusText.classList.toggle("is-locked", !sinfoniettaState.bonusAwarded);
+
+  if (!sinfoniettaState.bonusAwarded) {
+    extraPracticeBonusText.textContent = `${t("extraPracticeBonus", { points: 0 })} · ${t("extraPracticeLocked")}`;
+  }
+}
+
+function setExtraPracticeMinutes(minutes) {
+  ensureSinfoniettaToday();
+  sinfoniettaState.extraPracticeMinutes = Math.max(0, Math.floor(Number(minutes) || 0));
+  reconcileExtraPracticeBonus();
+  updateExtraPracticeDisplay();
+  saveSinfoniettaState();
 }
 
 function loadRedemptionRecords() {
@@ -1134,6 +1369,128 @@ function applyDifficultyToControls() {
   difficultySelect.value = String(selectedDifficulty);
 }
 
+function createScaleSelect(item) {
+  const select = document.createElement("select");
+  select.className = "sinfonietta-scale-select";
+  select.value = sinfoniettaState.scales[item.id] || SINFONIETTA_SCALES[0];
+  SINFONIETTA_SCALES.forEach((scale) => {
+    const option = document.createElement("option");
+    option.value = scale;
+    option.textContent = scale;
+    select.appendChild(option);
+  });
+  select.value = sinfoniettaState.scales[item.id] || SINFONIETTA_SCALES[0];
+  select.addEventListener("change", () => {
+    ensureSinfoniettaToday();
+    sinfoniettaState.scales[item.id] = select.value;
+    updateSinfoniettaProgress();
+  });
+  return select;
+}
+
+function createSinfoniettaTextInput(item) {
+  const label = document.createElement("label");
+  label.className = "sinfonietta-text-label";
+  label.textContent = t(item.textKey);
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = sinfoniettaState.notes[item.id] || "";
+  input.placeholder = t(item.textPlaceholderKey);
+  input.addEventListener("input", () => {
+    ensureSinfoniettaToday();
+    sinfoniettaState.notes[item.id] = input.value;
+    updateSinfoniettaProgress();
+  });
+
+  label.appendChild(input);
+  return label;
+}
+
+function renderSinfoniettaChecklist() {
+  ensureSinfoniettaToday();
+  sinfoniettaChecklist.textContent = "";
+  updateExtraPracticeDisplay();
+
+  SINFONIETTA_ITEMS.forEach((item) => {
+    const row = document.createElement("article");
+    row.className = "sinfonietta-item";
+
+    const content = document.createElement("div");
+    content.className = "sinfonietta-item-content";
+
+    const title = document.createElement("h3");
+    title.textContent = t(item.titleKey);
+    content.appendChild(title);
+
+    if (item.descriptionKey || item.goalKey) {
+      const description = document.createElement("p");
+      description.textContent = t(item.descriptionKey || item.goalKey);
+      content.appendChild(description);
+    }
+
+    if (item.type === "scale") {
+      content.appendChild(createScaleSelect(item));
+    }
+
+    if (item.textKey) {
+      content.appendChild(createSinfoniettaTextInput(item));
+    }
+
+    const checkboxLabel = document.createElement("label");
+    checkboxLabel.className = "sinfonietta-check";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = Boolean(sinfoniettaState.completed[item.id]);
+    checkbox.addEventListener("change", () => {
+      ensureSinfoniettaToday();
+      sinfoniettaState.completed[item.id] = checkbox.checked;
+      row.classList.toggle("is-complete", checkbox.checked);
+      updateSinfoniettaProgress();
+    });
+    const checkText = document.createElement("span");
+    checkText.textContent = t("completed");
+    checkboxLabel.append(checkbox, checkText);
+
+    row.classList.toggle("is-complete", checkbox.checked);
+    row.append(content, checkboxLabel);
+    sinfoniettaChecklist.appendChild(row);
+  });
+
+  updateSinfoniettaProgress();
+}
+
+function updateSinfoniettaProgress() {
+  ensureSinfoniettaToday();
+  const completedCount = getSinfoniettaCompletedCount();
+  const totalCount = SINFONIETTA_ITEMS.length;
+  const percent = Math.round((completedCount / totalCount) * 100);
+  sinfoniettaProgressText.textContent = t("dailyPracticeProgress", { count: completedCount, total: totalCount });
+  sinfoniettaProgressFill.style.width = `${percent}%`;
+
+  if (completedCount === totalCount) {
+    const justAwarded = awardSinfoniettaBonusIfReady();
+    reconcileExtraPracticeBonus();
+    sinfoniettaMessage.textContent = justAwarded ? t("sinfoniettaComplete") : t("sinfoniettaCompleteSaved");
+    sinfoniettaMessage.classList.add("is-complete");
+  } else {
+    sinfoniettaMessage.textContent = "";
+    sinfoniettaMessage.classList.remove("is-complete");
+  }
+
+  updateExtraPracticeDisplay();
+  saveSinfoniettaState();
+}
+
+function pickTodayScales() {
+  ensureSinfoniettaToday();
+  const shuffled = [...SINFONIETTA_SCALES].sort(() => Math.random() - 0.5);
+  sinfoniettaState.scales.scale1 = shuffled[0];
+  sinfoniettaState.scales.scale2 = shuffled.find((scale) => scale !== shuffled[0]) || shuffled[1];
+  saveSinfoniettaState();
+  renderSinfoniettaChecklist();
+}
+
 function updatePracticeStatus() {
   const log = getPracticeLog();
   const today = localDateKey(new Date());
@@ -1165,24 +1522,7 @@ function saveTodayPractice() {
 
   practiceTotalMinutes += minutes;
   savePracticeTotalMinutes();
-
-  const earnedPracticePoints = Math.floor(practiceTotalMinutes / 15);
-  const newPracticePoints = Math.max(0, earnedPracticePoints - practicePointsAwarded);
-
-  if (newPracticePoints > 0) {
-    practicePointsAwarded += newPracticePoints;
-    savePracticePointsAwarded();
-    recordPointEarned("real-practice", newPracticePoints);
-    progressMessage.textContent = newPracticePoints === 1
-      ? t("practicePointEarned")
-      : t("practicePointsEarned", { points: newPracticePoints });
-  } else {
-    const minutesToNextPoint = 15 - (practiceTotalMinutes % 15);
-    progressMessage.textContent = t("practiceSavedNext", {
-      minutes: minutesToNextPoint,
-      plural: plural(minutesToNextPoint)
-    });
-  }
+  progressMessage.textContent = t("practiceMinutesSaved");
 
   savePracticeLog(log);
   updatePracticeStatus();
@@ -1563,6 +1903,8 @@ function saveProgressSnapshot() {
     practicePointDates,
     practiceTotalMinutes,
     practicePointsAwarded,
+    sinfoniettaState,
+    sinfoniettaHistory,
     redemptionRecords,
     customRewards,
     practiceLog: getPracticeLog()
@@ -1589,6 +1931,8 @@ function resetProgress() {
   practicePointsAwarded = 0;
   redemptionRecords = [];
   customRewards = [];
+  sinfoniettaHistory = {};
+  sinfoniettaState = createDefaultSinfoniettaState();
   clearRewardForm();
 
   localStorage.removeItem("liamLevelStats");
@@ -1597,12 +1941,16 @@ function resetProgress() {
   localStorage.removeItem("liamPracticePointDates");
   localStorage.removeItem("liamPracticeTotalMinutes");
   localStorage.removeItem("liamPracticePointsAwarded");
+  localStorage.removeItem("liamSinfoniettaPracticeState");
+  localStorage.removeItem("liamSinfoniettaPracticeHistory");
   localStorage.removeItem("liamRewardRedemptions");
   localStorage.removeItem("liamCustomRewards");
   localStorage.removeItem("liamProgressSnapshot");
   localStorage.removeItem("liamLastPracticeRun");
 
   minutesInput.value = "";
+  saveSinfoniettaState();
+  renderSinfoniettaChecklist();
   updatePracticeStatus();
   updateScoreDisplay();
   progressMessage.textContent = t("progressReset");
@@ -1636,47 +1984,70 @@ function resetActiveStreak() {
   updateScoreDisplay();
 }
 
-function startRound(total = 10) {
+function startRound(total = QUESTIONS_PER_ROUND) {
   roundState = {
     total,
     answered: 0,
+    firstTryCorrect: 0,
+    missedQuestions: 0,
     missed: false,
     complete: false,
     attempts: 0,
-    revealing: false
+    revealing: false,
+    questionPerfect: true,
+    pointAwarded: false
   };
 }
 
-function startQuestionAttempt() {
+function startQuestionAttempt(options = {}) {
+  const { resetQuestionPerfect = true } = options;
   roundState.attempts = 0;
   roundState.revealing = false;
+
+  if (resetQuestionPerfect) {
+    roundState.questionPerfect = true;
+  }
 }
 
 function markRoundMissed() {
   if (!roundState.complete) {
+    if (roundState.questionPerfect) {
+      roundState.missedQuestions += 1;
+    }
+
+    roundState.questionPerfect = false;
     roundState.missed = true;
   }
 }
 
 function roundStatusText() {
-  const answered = Math.min(roundState.answered, roundState.total);
+  const answered = Math.min(roundState.answered, roundState.total - 1);
   const perfectText = roundState.missed ? t("learningRound") : t("perfectSoFar");
   return t("questionStatus", { current: answered + 1, total: roundState.total, status: perfectText });
 }
 
 function finishRound() {
-  roundState.complete = true;
+  if (roundState.complete) {
+    return;
+  }
 
-  if (!roundState.missed) {
-    awardRoundPoint();
-    gameFeedback.textContent = t("perfectTen");
+  roundState.complete = true;
+  const isPerfect = roundState.firstTryCorrect === roundState.total && !roundState.missed;
+
+  if (isPerfect) {
+    if (!roundState.pointAwarded) {
+      roundState.pointAwarded = true;
+      awardRoundPoint();
+    }
+
+    gameFeedback.textContent = t("perfectRound", { total: roundState.total });
     gameFeedback.className = "feedback correct";
-    melodyProgress.textContent = t("roundCompletePerfect");
+    melodyProgress.textContent = t("roundCompletePerfect", { total: roundState.total });
     return;
   }
 
   resetActiveStreak();
-  gameFeedback.textContent = t("roundCompleteLearning");
+  gameFeedback.textContent = t("learningRoundComplete", { correct: roundState.firstTryCorrect, total: roundState.total });
   gameFeedback.className = "feedback try-again";
   melodyProgress.textContent = t("roundCompleteTry");
 }
@@ -1684,6 +2055,10 @@ function finishRound() {
 function countCorrectQuestion() {
   if (roundState.complete) {
     return;
+  }
+
+  if (roundState.questionPerfect) {
+    roundState.firstTryCorrect += 1;
   }
 
   roundState.answered += 1;
@@ -1986,7 +2361,7 @@ function advanceMelodyNoteOrQuestion() {
   }
 
   currentNote = currentMelody[melodyIndex];
-  startQuestionAttempt();
+  startQuestionAttempt({ resetQuestionPerfect: false });
   melodyProgress.textContent = melodyQuestionStatusText(roundState.missed ? t("learningRound") : t("perfectSoFar"));
   drawMelody();
 }
@@ -1997,7 +2372,7 @@ function pickNewChallenge() {
   melodyAnswer.textContent = "";
   gameFeedback.className = "feedback";
   updateCurrentContext();
-  startRound(10);
+  startRound(QUESTIONS_PER_ROUND);
 
   if (!activeNotePool().length) {
     ledgerLines.textContent = "";
@@ -2017,7 +2392,7 @@ function pickNewChallenge() {
 
   if (activeMode.promptType === "practice") {
     practiceRun = {
-      notes: buildNoteSequence(10),
+      notes: buildNoteSequence(QUESTIONS_PER_ROUND),
       index: 0,
       startedAt: Date.now(),
       missedIndexes: new Set()
@@ -2048,7 +2423,7 @@ function pickNewChallenge() {
   startQuestionAttempt();
   drawSingleNote(currentNote);
   melodyProgress.textContent = activeMode.promptType === "audio"
-    ? t("audioQuestionStatus", { current: 1, status: t("perfectSoFar") })
+    ? t("audioQuestionStatus", { current: 1, total: roundState.total, status: t("perfectSoFar") })
     : roundStatusText();
   gameFeedback.textContent = activeMode.promptType === "audio" ? t("tapReplay") : t("tapAnswer");
 
@@ -2068,7 +2443,8 @@ function nextSingleQuestion() {
   drawSingleNote(currentNote);
   melodyProgress.textContent = activeMode.promptType === "audio"
     ? t("audioQuestionStatus", {
-      current: roundState.answered + 1,
+      current: Math.min(roundState.answered + 1, roundState.total),
+      total: roundState.total,
       status: roundState.missed ? t("learningRound") : t("perfectSoFar")
     })
     : roundStatusText();
@@ -2129,7 +2505,7 @@ function handleWrong(button, target, answerType = activeMode.answerType) {
   gameFeedback.className = "feedback try-again";
 
   if (roundState.attempts === 1) {
-    gameFeedback.textContent = t("goodTryAgain");
+    gameFeedback.textContent = t("goodTryAgain", { answer: targetAnswerText(target, answerType) });
   } else {
     roundState.revealing = true;
     gameFeedback.textContent = t("correctAnswerIs", { answer: targetAnswerText(target, answerType) });
@@ -2146,7 +2522,11 @@ function handleWrong(button, target, answerType = activeMode.answerType) {
   }
 
   melodyProgress.textContent = activeMode.promptType === "audio"
-    ? t("audioQuestionStatus", { current: roundState.answered + 1, status: t("learningShort") })
+    ? t("audioQuestionStatus", {
+      current: Math.min(roundState.answered + 1, roundState.total),
+      total: roundState.total,
+      status: t("learningShort")
+    })
     : roundStatusText();
 
   return roundState.revealing ? "reveal" : "retry";
@@ -2203,12 +2583,18 @@ function finishPracticeRun() {
     t("timeSeconds", { seconds }),
     t("notesMissed", { notes: missedNotes.length ? missedNotes.join(" | ") : t("none") })
   ].join("<br>");
-  gameFeedback.textContent = roundState.missed ? t("practiceRoundLearning") : t("perfectTen");
+  gameFeedback.textContent = roundState.missed
+    ? t("learningRoundComplete", { correct: roundState.firstTryCorrect, total: roundState.total })
+    : t("perfectRound", { total: roundState.total });
   gameFeedback.className = roundState.missed ? "feedback try-again" : "feedback correct";
   drawPracticeRun();
 }
 
 function handleLocationTap(button, stringName, finger) {
+  if (roundState.complete) {
+    return;
+  }
+
   if (activeMode.promptType === "practice") {
     handlePracticeTap(button, stringName, finger);
     return;
@@ -2258,7 +2644,7 @@ function handleLocationTap(button, stringName, finger) {
 }
 
 function handlePracticeTap(button, stringName, finger) {
-  if (roundState.revealing) {
+  if (roundState.revealing || roundState.complete) {
     return;
   }
 
@@ -2307,6 +2693,10 @@ function handlePracticeTap(button, stringName, finger) {
 }
 
 function handleStringTap(button, stringName) {
+  if (roundState.revealing || roundState.complete) {
+    return;
+  }
+
   if (isCorrectString(currentNote, stringName)) {
     handleCorrect(button);
     countCorrectQuestion();
@@ -2329,6 +2719,10 @@ function handleStringTap(button, stringName) {
 }
 
 function handleFingerTap(button, finger) {
+  if (roundState.revealing || roundState.complete) {
+    return;
+  }
+
   if (isCorrectFinger(currentNote, finger)) {
     handleCorrect(button);
     countCorrectQuestion();
@@ -2514,6 +2908,7 @@ function applyLanguage() {
   createScoreCards();
   createFingerboard();
   createChoicePanels();
+  renderSinfoniettaChecklist();
   applyCustomSettingsToControls();
   updatePracticeStatus();
   updateProgressDashboard();
@@ -2528,6 +2923,13 @@ function setLanguage(language) {
 }
 
 practiceButton.addEventListener("click", saveTodayPractice);
+pickScalesButton.addEventListener("click", pickTodayScales);
+extraPracticeMinutesInput.addEventListener("input", () => {
+  setExtraPracticeMinutes(extraPracticeMinutesInput.value);
+});
+addExtraPracticeButton.addEventListener("click", () => {
+  setExtraPracticeMinutes(Number(sinfoniettaState.extraPracticeMinutes || 0) + 15);
+});
 newNoteButton.addEventListener("click", pickNewChallenge);
 playNoteButton.addEventListener("click", playCurrentNote);
 saveProgressButton.addEventListener("click", saveProgressSnapshot);
@@ -2599,3 +3001,11 @@ if ("serviceWorker" in navigator) {
 
 drawStaffLines();
 applyLanguage();
+setInterval(() => {
+  const previousDate = sinfoniettaState.date;
+  ensureSinfoniettaToday();
+
+  if (sinfoniettaState.date !== previousDate) {
+    renderSinfoniettaChecklist();
+  }
+}, 60000);

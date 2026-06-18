@@ -49,9 +49,9 @@ This version expands the original Violin Adventure prototype into a more complet
 - Changed scoring so a perfect 10-question round earns 1 point only when every answer is correct on the first try.
 - Added one encouraging second try after a missed answer.
 - Second-try correct answers help learning, but the round no longer earns a point.
-- Added accumulated real-practice points:
-  - Every full 15 minutes of accumulated real practice earns 1 point.
-  - Practice minutes can build across multiple sessions.
+- Added Daily Sinfonietta Practice bonus points:
+  - Completing all 7 daily tasks earns 2 bonus points.
+  - The bonus is awarded only once per calendar day.
 - Added today, week, month, and year point tracking.
 
 ### Dashboard And Layout
@@ -82,7 +82,7 @@ This version expands the original Violin Adventure prototype into a more complet
   - selected difficulty
   - custom practice settings
   - progress records
-  - accumulated practice minutes and awarded practice points
+  - Daily Sinfonietta Practice history and awarded bonus points
   - custom rewards
   - reward redemptions
   - latest practice run
